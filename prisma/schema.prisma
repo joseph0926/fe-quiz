@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  name      String
+  role      Role     @default(MENTEE)
+
+  mentorSchedules  MentorSchedule[] @relation("MentorSchedules")
+  bookings         Booking[]        @relation("MenteeBookings")
+  mentoredBookings Booking[]        @relation("MentorBookings")
+}
+
+enum Role {
+  MENTOR
+  MENTEE
+}
+
+model MentorSchedule {
+  id          String   @id @default(cuid())
+  mentorId    String
+  startTime   DateTime
+  endTime     DateTime
+  dayOfWeek   Int
+  isRecurring Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  mentor   User      @relation("MentorSchedules", fields: [mentorId], references: [id])
+  bookings Booking[]
+
+  @@index([mentorId])
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  menteeId   String
+  mentorId   String
+  scheduleId String
+  startTime  DateTime
+  endTime    DateTime
+  status     BookingStatus @default(PENDING)
+  message    String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  mentee         User           @relation("MenteeBookings", fields: [menteeId], references: [id])
+  mentor         User           @relation("MentorBookings", fields: [mentorId], references: [id])
+  mentorSchedule MentorSchedule @relation(fields: [scheduleId], references: [id])
+
+  @@index([menteeId])
+  @@index([mentorId])
+  @@index([scheduleId])
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
