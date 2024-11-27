@@ -1,4 +1,5 @@
 import './globals.css';
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { cn } from '@/lib/utils';
@@ -70,10 +71,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className={cn(pretendard.className, 'antialiased')}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="ko">
+        <body className={cn(pretendard.className, 'antialiased')}>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

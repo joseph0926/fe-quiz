@@ -31,7 +31,17 @@ export const useSchedule = create<ScheduleState>((set) => ({
   isDragging: false,
   dragStart: null,
   setStep: (step) => set({ step }),
-  setCoreTime: (coreTime) => set({ coreTime }),
+  setCoreTime: (newCoreTime) =>
+    set((state) => {
+      const validSlots = state.selectedSlots.filter(
+        (slot) => slot.hour >= newCoreTime.start && slot.hour < newCoreTime.end
+      );
+
+      return {
+        coreTime: newCoreTime,
+        selectedSlots: validSlots,
+      };
+    }),
   setSelectedSlots: (slots) => set({ selectedSlots: slots }),
   setIsDragging: (isDragging) => set({ isDragging }),
   setDragStart: (dragStart) => set({ dragStart }),
