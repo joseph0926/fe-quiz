@@ -1,0 +1,10 @@
+{
+  "include": ["src", "vite.config.ts"],
+  "extends": "@fequiz/tsconfig/react.tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
