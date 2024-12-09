@@ -22,9 +22,9 @@ export async function generateStaticParams() {
 export default async function PostPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ category: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { id, category } = await params;
 
   const filePath = path.join(
     process.cwd(),
@@ -38,7 +38,7 @@ export default async function PostPage({
 
   return (
     <div className="prose mx-auto p-4">
-      <Link href="/contents" className="block py-4">
+      <Link href={`/contents/${category}`} className="block py-4">
         뒤로가기
       </Link>
       <h1>{data.title}</h1>
