@@ -4,7 +4,6 @@ export const tocData: TOCItem = {
   id: "00",
   title: "Handbook",
   children: [
-    { id: "00", title: "The TypeScript Handbook" },
     { id: "01", title: "The Basics" },
     { id: "02", title: "Everyday Types" },
     { id: "03", title: "Narrowing" },
