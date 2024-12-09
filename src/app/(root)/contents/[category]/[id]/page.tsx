@@ -24,9 +24,14 @@ export default async function PostPage({
 
   return (
     <div className="prose mx-auto p-4">
-      <Link href={`/contents/${category}`} className="block py-4">
-        뒤로가기
-      </Link>
+      <div className="flex items-center w-full justify-between py-4">
+        <Link href={`/contents/${category}`} className="block">
+          뒤로가기
+        </Link>
+        <Link href={`/contents/${category}/${id}/quiz`} className="block">
+          코드 퀴즈
+        </Link>
+      </div>
       <h1>{data.title}</h1>
       <Suspense fallback={null}>
         <MdxRemoteWrapper content={content} />

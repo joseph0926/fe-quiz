@@ -17,3 +17,12 @@ export type Quiz = {
   description: string;
   categories: QuizCategory[];
 };
+
+export type CodeQuizType = {
+  id: number;
+  title: string;
+  description: string;
+  code: string;
+  answer: string;
+  hint: string;
+};

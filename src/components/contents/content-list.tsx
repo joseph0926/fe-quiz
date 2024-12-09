@@ -112,9 +112,7 @@ export const ContentList = ({
                 학습 확인 퀴즈
               </AccordionTrigger>
               <AccordionContent className="pt-2">
-                <div className="px-4">
-                  <QuizComponent quiz={quiz} />
-                </div>
+                <QuizComponent quiz={quiz} />
               </AccordionContent>
             </AccordionItem>
           )}
