@@ -5,20 +5,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { MdxRemoteWrapper } from "@/components/contents/mdx-remote-wrapper";
 
-export async function generateStaticParams() {
-  const postsDirectory = path.join(
-    process.cwd(),
-    "src",
-    "constants",
-    "typescript"
-  );
-  const filenames = fs.readdirSync(postsDirectory);
-
-  return filenames.map((filename) => ({
-    id: filename.replace(/\.mdx?$/, ""),
-  }));
-}
-
 export default async function PostPage({
   params,
 }: {
@@ -30,7 +16,7 @@ export default async function PostPage({
     process.cwd(),
     "src",
     "constants",
-    "typescript",
+    category,
     `${id}.mdx`
   );
   const fileContents = fs.readFileSync(filePath, "utf8");

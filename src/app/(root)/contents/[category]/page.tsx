@@ -29,7 +29,12 @@ export default async function ContentsPage({
         <CardContent>
           <Accordion type="multiple" className="w-full transition-all">
             {tocData.children?.map((item, index) => (
-              <ContentList key={index} item={item} index={index.toString()} />
+              <ContentList
+                key={index}
+                category={category}
+                item={item}
+                index={index.toString()}
+              />
             ))}
           </Accordion>
         </CardContent>

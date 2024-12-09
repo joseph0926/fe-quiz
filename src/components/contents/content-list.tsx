@@ -11,9 +11,11 @@ import Link from "next/link";
 export const ContentList = ({
   item,
   index,
+  category,
 }: {
   item: TOCItem;
   index: string;
+  category: string;
 }) => {
   const hasChildren = item.children && item.children.length > 0;
   const depth = index.split("-").length - 1;
@@ -21,7 +23,7 @@ export const ContentList = ({
   if (!hasChildren) {
     return (
       <Link
-        href={item.id === "00" ? "#" : `/contents/${item.id}`}
+        href={item.id === "00" ? "#" : `/contents/${category}/${item.id}`}
         className={cn(
           "group relative py-3 px-4 hover:bg-accent rounded-md cursor-pointer transition-all duration-200 flex items-center gap-2 text-foreground dark:text-gray-200 dark:hover:bg-gray-800",
           depth > 0 ? "ml-4" : "",
@@ -66,6 +68,7 @@ export const ContentList = ({
         <div className="space-y-1">
           {item.children?.map((child, childIndex) => (
             <ContentList
+              category={category}
               key={childIndex}
               item={child}
               index={`${index}-${childIndex}`}
