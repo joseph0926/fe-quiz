@@ -1,0 +1,236 @@
+---
+title: "TypeScript 기본 사항"
+description: "TypeScript의 기본 개념과 타입 시스템의 이해"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+<Card className="mb-6">
+  <CardHeader>
+    <CardTitle>TypeScript란?</CardTitle>
+    <CardDescription>
+      JavaScript의 슈퍼셋으로, 정적 타입 시스템을 통해 개발자들이 더 안전하고 유지보수하기 쉬운 코드를 작성할 수 있게 도와줍니다.
+    </CardDescription>
+  </CardHeader>
+</Card>
+
+## JavaScript의 한계와 TypeScript의 필요성
+
+<Tabs defaultValue="example" className="w-full">
+  <TabsList>
+    <TabsTrigger value="example">예제 코드</TabsTrigger>
+    <TabsTrigger value="analysis">분석</TabsTrigger>
+  </TabsList>
+  <TabsContent value="example">
+    ```javascript
+    // message의 'toLowerCase' 속성에 접근하고 호출하기
+    message.toLowerCase();
+    
+    // message 호출하기
+    message();
+    ```
+  </TabsContent>
+  <TabsContent value="analysis">
+    <Accordion type="single" collapsible>
+      <AccordionItem value="question-1">
+        <AccordionTrigger>호출 가능성</AccordionTrigger>
+        <AccordionContent>
+          message는 실제로 호출 가능한 함수인가요?
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="question-2">
+        <AccordionTrigger>속성 존재 여부</AccordionTrigger>
+        <AccordionContent>
+          toLowerCase라는 속성이 실제로 존재하나요?
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="question-3">
+        <AccordionTrigger>메서드 실행 가능성</AccordionTrigger>
+        <AccordionContent>
+          toLowerCase가 존재한다면, 이는 실제로 호출 가능한 메서드인가요?
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="question-4">
+        <AccordionTrigger>반환값</AccordionTrigger>
+        <AccordionContent>
+          각각의 호출이 어떤 값을 반환할까요?
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  </TabsContent>
+</Tabs>
+
+<Alert className="my-6">
+  <AlertTitle>Note</AlertTitle>
+  <AlertDescription>
+    이러한 질문들은 JavaScript로 개발할 때 우리가 항상 머릿속에 담고 있어야 하는 것들입니다. 
+    하지만 코드베이스가 커질수록 이를 모두 기억하고 관리하는 것은 매우 어려워집니다.
+  </AlertDescription>
+</Alert>
+
+## 런타임 오류의 실제 예제
+
+<Card className="my-6">
+  <CardHeader>
+    <CardTitle>런타임 오류 예시</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```javascript
+    const message = "Hello World!";
+    message(); // TypeError: message is not a function
+    ```
+    
+    결과:
+    ```
+    TypeError: message is not a function
+    ```
+  </CardContent>
+</Card>
+
+## TypeScript의 정적 타입 검사
+
+<Card className="my-6">
+  <CardHeader>
+    <CardTitle>컴파일 시점 오류 감지</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    const message = "hello!";
+    
+    message();
+    // 오류: 이 표현식은 호출할 수 없습니다.
+    // 'String' 타입에는 호출 시그니처가 없습니다.
+    ```
+  </CardContent>
+</Card>
+
+<Alert variant="warning" className="my-6">
+  <AlertTitle>Warning</AlertTitle>
+  <AlertDescription>
+    TypeScript의 정적 타입 검사는 코드를 실행하기도 전에 잠재적인 오류를 찾아내어 런타임 오류를 방지하는 데 도움을 줍니다.
+  </AlertDescription>
+</Alert>
+
+## 설치 및 시작하기
+
+<Card className="my-6">
+  <CardHeader>
+    <CardTitle>TypeScript 컴파일러 설치</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```bash
+    npm install -g typescript
+    ```
+    
+    첫 번째 TypeScript 파일 생성:
+    ```typescript
+    // hello.ts
+    console.log("Hello world!");
+    ```
+    
+    컴파일 실행:
+    ```bash
+    tsc hello.ts
+    ```
+  </CardContent>
+</Card>
+
+## 타입 시스템 활용하기
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 타입</TabsTrigger>
+    <TabsTrigger value="advanced">고급 기능</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    <Card>
+      <CardContent className="pt-6">
+        ```typescript
+        // 기본 타입 예제
+        let name: string = "John";
+        let age: number = 30;
+        let isActive: boolean = true;
+        let numbers: number[] = [1, 2, 3];
+        ```
+      </CardContent>
+    </Card>
+  </TabsContent>
+  <TabsContent value="advanced">
+    <Card>
+      <CardContent className="pt-6">
+        ```typescript
+        // 인터페이스와 타입 별칭
+        interface User {
+          name: string;
+          age: number;
+        }
+        
+        type Point = {
+          x: number;
+          y: number;
+        };
+        ```
+      </CardContent>
+    </Card>
+  </TabsContent>
+</Tabs>
+
+## 엄격한 타입 검사 설정
+
+<Accordion type="single" collapsible className="my-6">
+  <AccordionItem value="noImplicitAny">
+    <AccordionTrigger>noImplicitAny</AccordionTrigger>
+    <AccordionContent>
+      ```typescript
+      function fn(s) {
+        // 오류: 매개변수 's'의 타입이 암시적으로 'any'입니다
+        console.log(s.subtr(3));
+      }
+      ```
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="strictNullChecks">
+    <AccordionTrigger>strictNullChecks</AccordionTrigger>
+    <AccordionContent>
+      ```typescript
+      let name: string;
+      name = null; // 오류: 'null'을 'string' 타입에 할당할 수 없습니다
+      ```
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+<Alert className="my-6">
+  <AlertTitle>Recommended</AlertTitle>
+  <AlertDescription>
+    새로운 프로젝트를 시작할 때는 `strict: true` 설정을 사용하는 것이 권장됩니다.
+    이는 더 안전한 코드 작성을 도와줍니다.
+  </AlertDescription>
+</Alert>
+
+## 마무리
+
+<Card className="my-6">
+  <CardHeader>
+    <CardTitle>TypeScript의 주요 이점</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <ul className="list-disc pl-6 space-y-2">
+      <li>컴파일 시점의 타입 검사</li>
+      <li>풍부한 개발 도구 지원</li>
+      <li>코드의 가독성과 유지보수성 향상</li>
+      <li>더 안전한 리팩토링</li>
+      <li>최신 JavaScript 기능 사용 가능</li>
+    </ul>
+  </CardContent>
+</Card>
+
+<Alert className="mt-6">
+  <AlertTitle>Pro Tip</AlertTitle>
+  <AlertDescription>
+    TypeScript를 효과적으로 사용하기 위해서는 점진적으로 도입하고, 팀의 요구사항에 맞게 설정을 조정하는 것이 중요합니다.
+  </AlertDescription>
+</Alert>
