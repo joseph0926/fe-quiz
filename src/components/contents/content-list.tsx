@@ -21,10 +21,11 @@ export const ContentList = ({
   if (!hasChildren) {
     return (
       <Link
-        href={`/contents/${item.id}`}
+        href={item.id === "00" ? "#" : `/contents/${item.id}`}
         className={cn(
           "group relative py-3 px-4 hover:bg-accent rounded-md cursor-pointer transition-all duration-200 flex items-center gap-2 text-foreground dark:text-gray-200 dark:hover:bg-gray-800",
-          depth > 0 ? "ml-4" : ""
+          depth > 0 ? "ml-4" : "",
+          item.id === "00" ? "pointer-events-none" : ""
         )}
       >
         <ChevronRight className="h-4 w-4 text-muted-foreground dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />

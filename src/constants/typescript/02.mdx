@@ -1,0 +1,763 @@
+---
+title: "일상적인 타입들"
+description: "JavaScript 코드에서 자주 사용되는 값들의 타입과 TypeScript에서의 표현 방법"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+
+이번 장에서는 JavaScript 코드에서 가장 흔히 볼 수 있는 값들의 타입과, TypeScript에서 이러한 타입들을 표현하는 방법에 대해 알아보겠습니다. 이는 완전한 목록이 아니며, 이후 장에서 다른 타입들을 명명하고 사용하는 방법에 대해 더 자세히 설명할 것입니다.
+
+<Alert>
+  <AlertTitle>참고</AlertTitle>
+  <AlertDescription>
+    타입은 단순히 타입 어노테이션에서만 나타나는 것이 아닙니다. 타입 자체에 대해 배우면서, 이러한 타입들을 참조하여 새로운 구조를 형성할 수 있는 다양한 위치에 대해서도 배우게 될 것입니다.
+  </AlertDescription>
+</Alert>
+
+## 기본적인 내용
+
+JavaScript 코드나 TypeScript 코드를 작성할 때 마주치게 될 가장 기본적이고 일반적인 타입들부터 시작해보겠습니다. 이러한 타입들은 나중에 더 복잡한 타입을 구성하는 핵심 구성 요소가 될 것입니다.
+
+## 기본 타입(Primitives)
+
+<Card>
+  <CardHeader>
+    <CardTitle>string, number, boolean</CardTitle>
+    <CardDescription>
+      JavaScript의 세 가지 주요 기본 타입
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    JavaScript에는 세 가지 매우 일반적인 기본 타입이 있으며, 각각 TypeScript에서 대응되는 타입을 가지고 있습니다. 
+    예상하실 수 있듯이, 이들은 JavaScript의 `typeof` 연산자를 해당 타입의 값에 사용했을 때 볼 수 있는 이름과 동일합니다:
+
+    - `string`: "Hello, world"와 같은 문자열 값을 나타냅니다
+    - `number`: 42와 같은 숫자를 나타냅니다 (JavaScript에는 정수를 위한 특별한 런타임 값이 없어서 `int`나 `float` 같은 구분이 없습니다)
+    - `boolean`: `true`와 `false` 두 값을 나타냅니다
+
+    `String`, `Number`, `Boolean`(대문자로 시작)도 유효한 타입 이름이지만, 이는 코드에서 매우 드물게 나타나는 특별한 내장 타입을 가리킵니다. 
+    *항상* `string`, `number`, `boolean`을 타입으로 사용하세요.
+  </CardContent>
+</Card>
+
+## 배열
+
+<Tabs defaultValue="syntax" className="w-full">
+  <TabsList>
+    <TabsTrigger value="syntax">기본 문법</TabsTrigger>
+    <TabsTrigger value="example">예제</TabsTrigger>
+  </TabsList>
+  <TabsContent value="syntax">
+    ```typescript
+    // 두 가지 방식으로 배열 타입을 선언할 수 있습니다
+    let numbers: number[] = [1, 2, 3];
+    let strings: Array<string> = ["hello", "world"];
+    ```
+  </TabsContent>
+  <TabsContent value="example">
+    ```typescript
+    // 실제 사용 예시
+    let scores: number[] = [75, 82, 93];
+    let names: string[] = ["Alice", "Bob", "Charlie"];
+    ```
+  </TabsContent>
+</Tabs>
+
+[1, 2, 3]과 같은 배열의 타입을 지정하려면 `number[]` 구문을 사용할 수 있습니다. 이 구문은 모든 타입에 적용됩니다(예: `string[]`는 문자열 배열). 
+`Array<number>`로도 작성할 수 있으며, 이는 같은 의미입니다. 제네릭을 다룰 때 `T<U>` 구문에 대해 더 자세히 배우게 될 것입니다.
+
+참고: `[number]`는 다른 것을 의미합니다. 튜플 섹션에서 이에 대해 다룰 것입니다.
+
+## any
+
+<Card>
+  <CardHeader>
+    <CardTitle>any 타입</CardTitle>
+    <CardDescription>
+      타입 검사를 우회하는 특별한 타입
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    TypeScript는 특별한 타입 `any`를 제공합니다. 특정 값에 대해 타입 검사 오류가 발생하는 것을 원하지 않을 때 사용할 수 있습니다.
+
+    ```typescript
+    let obj: any = { x: 0 };
+    
+    // 다음 코드들은 컴파일러 오류를 발생시키지 않습니다
+    obj.foo();
+    obj();
+    obj.bar = 100;
+    obj = "hello";
+    const n: number = obj;
+    ```
+
+    `any` 타입은 긴 타입을 작성하지 않고도 TypeScript에게 특정 코드가 올바르다고 확신시키고 싶을 때 유용합니다.
+  </CardContent>
+</Card>
+
+## noImplicitAny
+
+<Alert>
+  <AlertTitle>중요</AlertTitle>
+  <AlertDescription>
+    타입을 지정하지 않고 TypeScript가 문맥에서 추론할 수 없을 때, 컴파일러는 일반적으로 `any`로 기본 설정합니다. 
+    이는 보통 피하고 싶은 상황입니다. `noImplicitAny` 컴파일러 플래그를 사용하면 암시적 `any`를 오류로 표시할 수 있습니다.
+  </AlertDescription>
+</Alert>
+
+## 코드 예제
+
+```typescript
+// 기본 타입 사용 예시
+let message: string = "안녕하세요";
+let count: number = 42;
+let isDone: boolean = false;
+
+// 배열 타입 예시
+let numbers: number[] = [1, 2, 3, 4, 5];
+let names: Array<string> = ["Alice", "Bob", "Charlie"];
+
+// any 타입 예시 (가능하면 피하는 것이 좋습니다)
+let notSure: any = 4;
+notSure = "문자열일 수도 있습니다";
+notSure = false;
+```
+
+## 변수의 타입 어노테이션
+
+<Card>
+  <CardHeader>
+    <CardTitle>변수 선언시 타입 지정</CardTitle>
+    <CardDescription>
+      `const`, `var`, 또는 `let`으로 변수를 선언할 때 타입 어노테이션을 추가하여 변수의 타입을 명시적으로 지정할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    let myName: string = "Alice";
+    ```
+
+    TypeScript는 `int x = 0;`와 같은 "왼쪽에 타입을 쓰는" 방식의 선언을 사용하지 않습니다. 
+    타입 어노테이션은 항상 타입이 지정되는 대상 *뒤에* 위치합니다.
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>타입 추론</AlertTitle>
+  <AlertDescription>
+    대부분의 경우 타입 어노테이션이 필요하지 않습니다. TypeScript는 가능한 한 코드의 타입을 자동으로 *추론*하려고 합니다.
+    예를 들어, 변수의 타입은 초기화 값의 타입을 기반으로 추론됩니다.
+  </AlertDescription>
+</Alert>
+
+```typescript
+// 타입 어노테이션이 필요 없음 - 'myName'은 자동으로 'string' 타입으로 추론됨
+let myName = "Alice";
+```
+
+타입 추론의 규칙을 명시적으로 배울 필요는 없습니다. 처음 시작할 때는 생각보다 적은 타입 어노테이션을 사용해보세요 - 
+TypeScript가 상황을 완전히 이해하는 데 필요한 어노테이션이 생각보다 적다는 것을 발견하실 수 있습니다.
+
+## 함수
+
+<Card>
+  <CardHeader>
+    <CardTitle>함수의 타입 시스템</CardTitle>
+    <CardDescription>
+      JavaScript에서 함수는 데이터를 전달하는 주요 수단입니다. TypeScript를 사용하면 함수의 입력값과 출력값 모두에 대한 타입을 지정할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+</Card>
+
+### 매개변수 타입 어노테이션
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 사용법</TabsTrigger>
+    <TabsTrigger value="error">타입 검사</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    function greet(name: string) {
+      console.log("Hello, " + name.toUpperCase() + "!!");
+    }
+    ```
+    함수를 선언할 때 각 매개변수 뒤에 타입 어노테이션을 추가하여 함수가 받아들이는 매개변수의 타입을 선언할 수 있습니다.
+  </TabsContent>
+  <TabsContent value="error">
+    ```typescript
+    // 실행하면 런타임 오류가 발생합니다!
+    greet(42); // 오류: 'number' 타입의 인수는 'string' 타입 매개변수에 할당할 수 없습니다.
+    ```
+    매개변수에 타입 어노테이션이 있으면 해당 함수에 대한 인수가 검사됩니다.
+  </TabsContent>
+</Tabs>
+
+### 반환 타입 어노테이션
+
+<Card>
+  <CardHeader>
+    <CardTitle>함수의 반환 타입 지정</CardTitle>
+  </CardHeader>
+  <CardContent>
+    매개변수 목록 뒤에 반환 타입 어노테이션을 추가할 수 있습니다:
+
+    ```typescript
+    function getFavoriteNumber(): number {
+      return 26;
+    }
+    ```
+
+    변수 타입 어노테이션과 마찬가지로, TypeScript는 `return` 문을 기반으로 함수의 반환 타입을 추론하기 때문에 
+    보통은 반환 타입 어노테이션이 필요하지 않습니다. 하지만 문서화 목적이나 실수로 인한 변경을 방지하기 위해, 
+    또는 개인적인 선호도에 따라 명시적으로 반환 타입을 지정하는 코드베이스도 있습니다.
+  </CardContent>
+</Card>
+
+### Promise를 반환하는 함수
+
+Promise를 반환하는 함수의 타입을 지정하려면 `Promise` 타입을 사용해야 합니다:
+
+```typescript
+async function getFavoriteNumber(): Promise<number> {
+  return 26;
+}
+```
+
+### 익명 함수
+
+<Card>
+  <CardHeader>
+    <CardTitle>컨텍스트 기반 타이핑</CardTitle>
+    <CardDescription>
+      익명 함수는 함수 선언과는 약간 다르게 동작합니다. TypeScript가 함수가 어떻게 호출될지 파악할 수 있는 위치에 
+      익명 함수가 있다면, 해당 함수의 매개변수는 자동으로 타입이 부여됩니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    const names = ["Alice", "Bob", "Eve"];
+
+    // 함수에 대한 문맥적 타이핑 - 매개변수 s는 자동으로 string 타입으로 추론됨
+    names.forEach(function (s) {
+      console.log(s.toUpperCase());
+    });
+
+    // 화살표 함수에도 문맥적 타이핑이 적용됨
+    names.forEach((s) => {
+      console.log(s.toUpperCase());
+    });
+    ```
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>문맥적 타이핑(Contextual Typing)</AlertTitle>
+  <AlertDescription>
+    매개변수 `s`에 타입 어노테이션이 없었지만, TypeScript는 `forEach` 함수의 타입과 배열의 추론된 타입을 
+    사용하여 `s`가 가질 타입을 결정했습니다. 이 과정을 *문맥적 타이핑*이라고 하며, 
+    함수가 발생한 *문맥*이 어떤 타입을 가져야 하는지 알려주기 때문입니다.
+  </AlertDescription>
+</Alert>
+
+추론 규칙과 마찬가지로, 이것이 어떻게 일어나는지 명시적으로 배울 필요는 없지만, 
+이것이 *일어난다는* 것을 이해하면 타입 어노테이션이 필요하지 않은 경우를 파악하는 데 도움이 됩니다. 
+나중에 값이 발생하는 문맥이 그 값의 타입에 어떤 영향을 미칠 수 있는지에 대한 더 많은 예제를 보게 될 것입니다.
+
+## 객체 타입
+
+<Card>
+  <CardHeader>
+    <CardTitle>객체 타입의 이해</CardTitle>
+    <CardDescription>
+      기본 타입 외에도 가장 흔히 마주치게 될 타입은 객체 타입입니다. 이는 속성을 가진 모든 JavaScript 값을 
+      가리키며, 사실상 대부분의 값이 여기에 해당합니다!
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    객체 타입을 정의하려면 단순히 해당 객체의 속성과 그 타입들을 나열하면 됩니다. 예를 들어:
+
+    ```typescript
+    function printCoord(pt: { x: number; y: number }) {
+      console.log("The coordinate's x value is " + pt.x);
+      console.log("The coordinate's y value is " + pt.y);
+    }
+    
+    printCoord({ x: 3, y: 7 });
+    ```
+
+    여기서는 매개변수에 두 개의 속성(x와 y)을 가진 타입을 지정했으며, 둘 다 number 타입입니다.
+    속성을 구분할 때 `,` 또는 `;`를 사용할 수 있으며, 마지막 구분자는 선택사항입니다.
+  </CardContent>
+</Card>
+
+### 선택적 속성
+
+<Card>
+  <CardHeader>
+    <CardTitle>선택적 속성 정의</CardTitle>
+    <CardDescription>
+      객체 타입에서 일부 또는 모든 속성을 선택적으로 지정할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    속성 이름 뒤에 `?`를 추가하여 해당 속성이 선택적임을 나타낼 수 있습니다:
+
+    ```typescript
+    function printName(obj: { first: string; last?: string }) {
+      // Error - obj.last가 제공되지 않았다면 오류가 발생할 수 있음!
+      console.log(obj.last.toUpperCase());
+
+      // 안전한 방법:
+      if (obj.last !== undefined) {
+        console.log(obj.last.toUpperCase());
+      }
+
+      // 또는 현대적인 JavaScript 문법 사용:
+      console.log(obj.last?.toUpperCase());
+    }
+
+    // 둘 다 사용 가능
+    printName({ first: "Bob" });
+    printName({ first: "Alice", last: "Alisson" });
+    ```
+  </CardContent>
+</Card>
+
+## 유니온 타입
+
+<Alert>
+  <AlertTitle>유니온 타입이란?</AlertTitle>
+  <AlertDescription>
+    TypeScript의 타입 시스템에서는 기존 타입들을 다양한 연산자를 사용하여 새로운 타입으로 만들 수 있습니다.
+    유니온 타입은 두 개 이상의 다른 타입들로 구성된 타입으로, 해당 타입들 중 어느 하나가 될 수 있는 값을 나타냅니다.
+  </AlertDescription>
+</Alert>
+
+### 유니온 타입 정의하기
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 사용법</TabsTrigger>
+    <TabsTrigger value="multiline">여러 줄 형식</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    function printId(id: number | string) {
+      console.log("Your ID is: " + id);
+    }
+
+    // OK
+    printId(101);
+    // OK
+    printId("202");
+    // Error
+    printId({ myID: 22342 }); // 오류: string | number 타입에 할당할 수 없음
+    ```
+  </TabsContent>
+  <TabsContent value="multiline">
+    ```typescript
+    function printTextOrNumberOrBool(
+      textOrNumberOrBool:
+        | string
+        | number
+        | boolean
+    ) {
+      console.log(textOrNumberOrBool);
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+### 유니온 타입 다루기
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 좁히기(Type Narrowing)</CardTitle>
+  </CardHeader>
+  <CardContent>
+    유니온 타입의 값으로 작업할 때, TypeScript는 모든 멤버에 대해 유효한 작업만 허용합니다.
+    예를 들어, `string | number` 유니온에서는 string에만 존재하는 메서드를 바로 사용할 수 없습니다:
+
+    ```typescript
+    function printId(id: number | string) {
+      if (typeof id === "string") {
+        // 이 분기에서 id는 'string' 타입
+        console.log(id.toUpperCase());
+      } else {
+        // 여기서 id는 'number' 타입
+        console.log(id);
+      }
+    }
+    ```
+
+    또 다른 예시:
+
+    ```typescript
+    function welcomePeople(x: string[] | string) {
+      if (Array.isArray(x)) {
+        // 여기서 'x'는 'string[]'
+        console.log("Hello, " + x.join(" and "));
+      } else {
+        // 여기서 'x'는 'string'
+        console.log("Welcome lone traveler " + x);
+      }
+    }
+    ```
+  </CardContent>
+</Card>
+
+<Alert className="mt-4">
+  <AlertTitle>공통 속성 다루기</AlertTitle>
+  <AlertDescription>
+    때로는 유니온의 모든 멤버가 공통점을 가질 수 있습니다. 예를 들어, 배열과 문자열 모두 `slice` 메서드를 
+    가지고 있습니다. 유니온의 모든 멤버가 공통 속성을 가지고 있다면, 타입 좁히기 없이도 해당 속성을 사용할 수 있습니다:
+
+    ```typescript
+    // 반환 타입은 number[] | string으로 추론됨
+    function getFirstThree(x: number[] | string) {
+      return x.slice(0, 3);
+    }
+    ```
+  </AlertDescription>
+</Alert>
+
+유니온 타입이 해당 타입들의 속성의 교집합을 가지는 것처럼 보일 수 있습니다. 이는 우연이 아닌 타입 이론에서 
+비롯된 것입니다. 각 집합에 대한 사실들이 주어졌을 때, 집합들의 합집합에는 그 사실들의 교집합만이 적용됩니다.
+
+## 타입 별칭
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 별칭(Type Aliases)의 이해</CardTitle>
+    <CardDescription>
+      타입 별칭은 말 그대로 타입에 대한 이름입니다. 동일한 타입을 여러 번 사용하고 싶을 때 
+      단일 이름으로 참조할 수 있게 해줍니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type Point = {
+      x: number;
+      y: number;
+    };
+
+    // 이전 예제와 정확히 동일
+    function printCoord(pt: Point) {
+      console.log("The coordinate's x value is " + pt.x);
+      console.log("The coordinate's y value is " + pt.y);
+    }
+
+    printCoord({ x: 100, y: 100 });
+    ```
+
+    객체 타입뿐만 아니라 모든 타입에 대해 별칭을 지정할 수 있습니다. 예를 들어:
+
+    ```typescript
+    type ID = number | string;
+    ```
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>타입 별칭의 특징</AlertTitle>
+  <AlertDescription>
+    별칭은 말 그대로 별칭일 뿐입니다. 동일한 타입의 다른/구별되는 "버전"을 만들 수는 없습니다.
+    별칭을 사용할 때는 별칭이 지정된 타입을 직접 작성한 것과 정확히 동일합니다.
+  </AlertDescription>
+</Alert>
+
+## 인터페이스
+
+<Card>
+  <CardHeader>
+    <CardTitle>인터페이스(Interfaces) 소개</CardTitle>
+    <CardDescription>
+      인터페이스 선언은 객체 타입에 이름을 부여하는 또 다른 방법입니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    interface Point {
+      x: number;
+      y: number;
+    }
+
+    function printCoord(pt: Point) {
+      console.log("The coordinate's x value is " + pt.x);
+      console.log("The coordinate's y value is " + pt.y);
+    }
+
+    printCoord({ x: 100, y: 100 });
+    ```
+  </CardContent>
+</Card>
+
+### 타입 별칭과 인터페이스의 차이점
+
+<Tabs defaultValue="extending" className="w-full">
+  <TabsList>
+    <TabsTrigger value="extending">확장</TabsTrigger>
+    <TabsTrigger value="adding">속성 추가</TabsTrigger>
+  </TabsList>
+  <TabsContent value="extending">
+    ```typescript
+    // 인터페이스 확장
+    interface Animal {
+      name: string;
+    }
+
+    interface Bear extends Animal {
+      honey: boolean;
+    }
+
+    // 타입 교차를 통한 타입 확장
+    type Animal = {
+      name: string;
+    }
+
+    type Bear = Animal & { 
+      honey: boolean;
+    }
+    ```
+  </TabsContent>
+  <TabsContent value="adding">
+    ```typescript
+    // 기존 인터페이스에 새 필드 추가
+    interface Window {
+      title: string;
+    }
+
+    interface Window {
+      ts: TypeScriptAPI;
+    }
+
+    // 타입은 생성 후 변경 불가
+    type Window = {
+      title: string;
+    }
+
+    type Window = { // 오류: 'Window' 식별자가 중복됨
+      ts: TypeScriptAPI;
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+<Card className="mt-4">
+  <CardHeader>
+    <CardTitle>주요 차이점</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. 인터페이스는 선언 병합이 가능하지만, 타입 별칭은 불가능
+    2. 인터페이스는 객체 형태만 선언 가능, 원시 타입의 이름 변경은 불가능
+    3. 오류 메시지에서 인터페이스 이름은 항상 원래 형태로 표시
+    4. extends를 사용한 인터페이스가 교차 타입을 사용한 타입 별칭보다 컴파일러 성능이 더 좋음
+  </CardContent>
+</Card>
+
+## 타입 단언
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 단언(Type Assertions)</CardTitle>
+    <CardDescription>
+      때로는 TypeScript가 알지 못하는 값의 타입에 대한 정보를 개발자가 알고 있을 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // as 구문 사용
+    const myCanvas = document.getElementById("main_canvas") as HTMLCanvasElement;
+
+    // 앵글 브라켓 구문 사용 (.tsx 파일에서는 사용 불가)
+    const myCanvas = <HTMLCanvasElement>document.getElementById("main_canvas");
+    ```
+
+    <Alert className="mt-4">
+      <AlertTitle>주의사항</AlertTitle>
+      <AlertDescription>
+        타입 단언은 컴파일 시점에 제거되며 런타임 동작에 영향을 미치지 않습니다.
+        타입 단언이 잘못되어도 런타임에서 예외나 null이 생성되지 않습니다.
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+<Alert className="mt-4" variant="warning">
+  <AlertTitle>타입 단언의 제한사항</AlertTitle>
+  <AlertDescription>
+    TypeScript는 더 구체적이거나 덜 구체적인 버전의 타입으로의 변환만 허용합니다. "불가능한" 강제 변환을 방지하기 위함입니다:
+
+    ```typescript
+    const x = "hello" as number; // 오류!
+
+    // 필요한 경우 두 번의 단언을 사용할 수 있습니다
+    const a = expr as any as T;
+    ```
+  </AlertDescription>
+</Alert>
+
+## 리터럴 타입
+
+<Card>
+  <CardHeader>
+    <CardTitle>리터럴 타입의 이해</CardTitle>
+    <CardDescription>
+      일반적인 string과 number 타입 외에도, 특정 문자열과 숫자를 타입 위치에서 참조할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    let changingString = "Hello World";
+    changingString = "Olá Mundo";
+    // changingString은 모든 가능한 문자열을 표현할 수 있으므로
+    // TypeScript는 이를 string 타입으로 정의합니다
+    let changingString: string;
+
+    const constantString = "Hello World";
+    // constantString은 단 하나의 문자열만 표현할 수 있으므로
+    // 리터럴 타입으로 표현됩니다
+    const constantString: "Hello World";
+    ```
+  </CardContent>
+</Card>
+
+### 리터럴 타입의 활용
+
+<Tabs defaultValue="string" className="w-full">
+  <TabsList>
+    <TabsTrigger value="string">문자열 리터럴</TabsTrigger>
+    <TabsTrigger value="numeric">숫자 리터럴</TabsTrigger>
+  </TabsList>
+  <TabsContent value="string">
+    ```typescript
+    function printText(s: string, alignment: "left" | "right" | "center") {
+      // ...
+    }
+    printText("Hello, world", "left"); // OK
+    printText("G'day, mate", "centre"); // Error: "centre" 타입 할당 불가
+    ```
+  </TabsContent>
+  <TabsContent value="numeric">
+    ```typescript
+    function compare(a: string, b: string): -1 | 0 | 1 {
+      return a === b ? 0 : a > b ? 1 : -1;
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+## 리터럴 추론
+
+<Card>
+  <CardHeader>
+    <CardTitle>객체의 리터럴 추론</CardTitle>
+    <CardDescription>
+      변수를 객체로 초기화할 때, TypeScript는 해당 객체의 속성값이 나중에 변경될 수 있다고 가정합니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    declare function handleRequest(url: string, method: "GET" | "POST"): void;
+
+    // 문제가 되는 코드
+    const req = { url: "https://example.com", method: "GET" };
+    handleRequest(req.url, req.method); // Error: string 타입을 "GET" | "POST"에 할당할 수 없음
+
+    // 해결 방법 1: 타입 단언 사용
+    const req1 = { url: "https://example.com", method: "GET" as "GET" };
+
+    // 해결 방법 2: as const 사용
+    const req2 = { url: "https://example.com", method: "GET" } as const;
+    ```
+  </CardContent>
+</Card>
+
+## null과 undefined
+
+<Alert>
+  <AlertTitle>strictNullChecks의 중요성</AlertTitle>
+  <AlertDescription>
+    TypeScript에서 null과 undefined의 동작은 strictNullChecks 옵션에 따라 달라집니다.
+    이 옵션을 켜는 것을 강력히 추천합니다.
+  </AlertDescription>
+</Alert>
+
+<Card className="mt-4">
+  <CardHeader>
+    <CardTitle>Null 처리하기</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function doSomething(x: string | null) {
+      if (x === null) {
+        // 아무것도 하지 않음
+      } else {
+        console.log("Hello, " + x.toUpperCase());
+      }
+    }
+
+    // Non-null 단언 연산자 사용
+    function liveDangerously(x?: number | null) {
+      console.log(x!.toFixed()); // x가 null/undefined가 아님을 단언
+    }
+    ```
+  </CardContent>
+</Card>
+
+## 열거형(Enums)
+
+<Alert variant="warning">
+  <AlertTitle>주의사항</AlertTitle>
+  <AlertDescription>
+    Enum은 TypeScript가 JavaScript에 추가한 기능으로, 타입 수준의 추가가 아닌 언어와 런타임에 추가된 기능입니다.
+    필요한 경우가 아니라면 사용을 보류하는 것이 좋습니다.
+  </AlertDescription>
+</Alert>
+
+## 기타 원시 타입
+
+### BigInt
+
+<Card>
+  <CardHeader>
+    <CardTitle>BigInt 사용하기</CardTitle>
+    <CardDescription>
+      ES2020부터 도입된 매우 큰 정수를 위한 원시 타입입니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // BigInt 함수를 통한 생성
+    const oneHundred: bigint = BigInt(100);
+
+    // 리터럴 문법을 통한 생성
+    const anotherHundred: bigint = 100n;
+    ```
+  </CardContent>
+</Card>
+
+### Symbol
+
+<Card>
+  <CardHeader>
+    <CardTitle>Symbol 이해하기</CardTitle>
+    <CardDescription>
+      전역적으로 고유한 참조를 만들기 위해 사용되는 JavaScript의 원시 타입입니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    const firstName = Symbol("name");
+    const secondName = Symbol("name");
+
+    if (firstName === secondName) {
+      // 절대 실행되지 않음 - 각 Symbol은 고유함
+    }
+    ```
+  </CardContent>
+</Card>
