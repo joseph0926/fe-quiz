@@ -22,7 +22,9 @@ type AnswerRecord = Record<string, number>;
 export function QuizComponent({ quiz }: { quiz: Quiz }) {
   const [currentCategory, setCurrentCategory] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | string | null>(
+    null
+  );
   const [showExplanation, setShowExplanation] = useState(false);
   const [answers, setAnswers] = useState<AnswerRecord>({});
 
@@ -39,6 +41,7 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
 
   function handleAnswer() {
     if (selectedAnswer === null) return;
+    if (typeof selectedAnswer === 'string') return;
 
     setAnswers({
       ...answers,
@@ -116,7 +119,7 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
             </div>
 
             <RadioGroup
-              value={selectedAnswer?.toString()}
+              value={selectedAnswer?.toString() ?? ''}
               onValueChange={(value) => setSelectedAnswer(Number(value))}
               className="space-y-3"
             >
