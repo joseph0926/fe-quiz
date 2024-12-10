@@ -1,0 +1,143 @@
+---
+title: "템플릿 리터럴 타입"
+description: "TypeScript의 템플릿 리터럴 타입과 문자열 조작"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+## 템플릿 리터럴 타입
+
+<Card>
+  <CardHeader>
+    <CardTitle>기본 개념</CardTitle>
+    <CardDescription>
+      JavaScript의 템플릿 리터럴 문자열과 유사한 구문을 사용하여 타입을 생성합니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type World = "world";
+    type Greeting = `hello ${World}`;  // type Greeting = "hello world"
+
+    // 유니온 타입과 함께 사용
+    type EmailLocaleIDs = "welcome_email" | "email_heading";
+    type FooterLocaleIDs = "footer_title" | "footer_sendoff";
+    
+    type AllLocaleIDs = `${EmailLocaleIDs | FooterLocaleIDs}_id`;
+    // "welcome_email_id" | "email_heading_id" | "footer_title_id" | "footer_sendoff_id"
+    ```
+  </CardContent>
+</Card>
+
+## 타입 내 문자열 유니온
+
+<Card>
+  <CardHeader>
+    <CardTitle>실제 활용 사례</CardTitle>
+    <CardDescription>
+      객체의 프로퍼티를 기반으로 이벤트 이름을 생성하는 예제
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type PropEventSource<Type> = {
+      on<Key extends string & keyof Type>(
+        eventName: `${Key}Changed`,
+        callback: (newValue: Type[Key]) => void
+      ): void;
+    };
+
+    declare function makeWatchedObject<Type>(
+      obj: Type
+    ): Type & PropEventSource<Type>;
+
+    // 사용 예시
+    const person = makeWatchedObject({
+      firstName: "Saoirse",
+      lastName: "Ronan",
+      age: 26
+    });
+
+    person.on("firstNameChanged", (newName: string) => {
+      console.log(`new name is ${newName.toUpperCase()}`);
+    });
+    ```
+
+    <Alert>
+      <AlertTitle>타입 안전성</AlertTitle>
+      <AlertDescription>
+        템플릿 리터럴 타입을 사용하면 타입 오류를 컴파일 시점에 잡을 수 있습니다:
+        - 잘못된 프로퍼티 이름
+        - 타입이 맞지 않는 콜백 함수
+        - 오타가 있는 이벤트 이름
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## 내장 문자열 조작 타입
+
+<Tabs defaultValue="uppercase" className="w-full">
+  <TabsList>
+    <TabsTrigger value="uppercase">Uppercase</TabsTrigger>
+    <TabsTrigger value="lowercase">Lowercase</TabsTrigger>
+    <TabsTrigger value="capitalize">Capitalize</TabsTrigger>
+  </TabsList>
+  <TabsContent value="uppercase">
+    ```typescript
+    type Greeting = "Hello, world";
+    type ShoutyGreeting = Uppercase<Greeting>;  
+    // "HELLO, WORLD"
+
+    type ASCIICacheKey<Str extends string> = `ID-${Uppercase<Str>}`;
+    type MainID = ASCIICacheKey<"my_app">;  // "ID-MY_APP"
+    ```
+  </TabsContent>
+  <TabsContent value="lowercase">
+    ```typescript
+    type Greeting = "Hello, world";
+    type QuietGreeting = Lowercase<Greeting>;  
+    // "hello, world"
+
+    type ASCIICacheKey<Str extends string> = `id-${Lowercase<Str>}`;
+    type MainID = ASCIICacheKey<"MY_APP">;  // "id-my_app"
+    ```
+  </TabsContent>
+  <TabsContent value="capitalize">
+    ```typescript
+    type LowercaseGreeting = "hello, world";
+    type Greeting = Capitalize<LowercaseGreeting>;  
+    // "Hello, world"
+
+    type UppercaseGreeting = "HELLO WORLD";
+    type UncomfortableGreeting = Uncapitalize<UppercaseGreeting>;  
+    // "hELLO WORLD"
+    ```
+  </TabsContent>
+</Tabs>
+
+<Card>
+  <CardHeader>
+    <CardTitle>고급 활용 예제</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // API 엔드포인트 생성
+    type APIEndpoint<Method, Path> = 
+      `/${Lowercase<Method>}${Capitalize<Path>}`;
+
+    type UserEndpoints = APIEndpoint<"get" | "post", "user" | "profile">;
+    // "/getUser" | "/getProfile" | "/postUser" | "/postProfile"
+
+    // CSS 클래스 생성
+    type Spacing = "sm" | "md" | "lg";
+    type Property = "margin" | "padding";
+    type Direction = "top" | "right" | "bottom" | "left";
+
+    type CSSClass = `${Property}-${Direction}-${Spacing}`;
+    // "margin-top-sm" | "margin-top-md" | ...
+    ```
+  </CardContent>
+</Card>

@@ -1,0 +1,771 @@
+---
+title: "함수 타입"
+description: "TypeScript에서 함수 타입을 정의하고 사용하는 다양한 방법"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+## 함수 타입
+
+<Card>
+  <CardHeader>
+    <CardTitle>함수의 중요성</CardTitle>
+    <CardDescription>
+      함수는 애플리케이션의 기본 구성 요소입니다. 로컬 함수, 임포트된 함수, 클래스 메서드 등 
+      다양한 형태로 존재하며, TypeScript는 이러한 함수들의 타입을 정의하는 여러 방법을 제공합니다.
+    </CardDescription>
+  </CardHeader>
+</Card>
+
+## 함수 타입 표현식 (Function Type Expressions)
+
+<Card>
+  <CardHeader>
+    <CardTitle>기본 문법</CardTitle>
+    <CardDescription>
+      화살표 함수와 유사한 문법으로 함수 타입을 표현할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function greeter(fn: (a: string) => void) {
+      fn("Hello, World");
+    }
+    
+    function printToConsole(s: string) {
+      console.log(s);
+    }
+    
+    greeter(printToConsole);
+    ```
+
+    `(a: string) => void`는 "string 타입의 매개변수 a를 받고 반환값이 없는 함수"를 의미합니다.
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>매개변수 이름의 중요성</AlertTitle>
+  <AlertDescription>
+    매개변수 이름은 필수입니다. `(string) => void`는 "`string`이라는 이름의 `any` 타입 매개변수를 가진 함수"를 의미합니다!
+  </AlertDescription>
+</Alert>
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 사용</TabsTrigger>
+    <TabsTrigger value="alias">타입 별칭</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    function greeter(fn: (a: string) => void) {
+      fn("Hello, World");
+    }
+    ```
+  </TabsContent>
+  <TabsContent value="alias">
+    ```typescript
+    type GreetFunction = (a: string) => void;
+    
+    function greeter(fn: GreetFunction) {
+      // ...
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+## 호출 시그니처 (Call Signatures)
+
+<Card>
+  <CardHeader>
+    <CardTitle>프로퍼티를 가진 호출 가능한 타입</CardTitle>
+    <CardDescription>
+      JavaScript에서 함수는 호출 가능할 뿐만 아니라 프로퍼티도 가질 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type DescribableFunction = {
+      description: string;
+      (someArg: number): boolean;
+    };
+
+    function doSomething(fn: DescribableFunction) {
+      console.log(fn.description + " returned " + fn(6));
+    }
+
+    function myFunc(someArg: number) {
+      return someArg > 3;
+    }
+    myFunc.description = "default description";
+
+    doSomething(myFunc);
+    ```
+  </CardContent>
+</Card>
+
+## 생성자 시그니처 (Construct Signatures)
+
+<Card>
+  <CardHeader>
+    <CardTitle>new 연산자로 호출 가능한 함수</CardTitle>
+    <CardDescription>
+      JavaScript 함수는 `new` 연산자로도 호출될 수 있습니다. TypeScript에서는 이를 생성자로 표현합니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type SomeConstructor = {
+      new (s: string): SomeObject;
+    };
+
+    function fn(ctor: SomeConstructor) {
+      return new ctor("hello");
+    }
+    ```
+  </CardContent>
+</Card>
+
+<Card>
+  <CardHeader>
+    <CardTitle>호출과 생성자 시그니처 조합</CardTitle>
+    <CardDescription>
+      JavaScript의 `Date` 객체처럼 `new` 연산자와 함께 또는 없이 호출할 수 있는 타입을 정의할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    interface CallOrConstruct {
+      (n?: number): string;
+      new (s: string): Date;
+    }
+
+    function fn(ctor: CallOrConstruct) {
+      console.log(ctor(10));         // 일반 호출
+      console.log(new ctor("10"));   // 생성자 호출
+    }
+
+    fn(Date);
+    ```
+  </CardContent>
+</Card>
+
+## 제네릭 함수
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 함수의 기본</CardTitle>
+    <CardDescription>
+      입력과 출력의 타입이 연관되어 있거나, 두 입력의 타입이 서로 관련되어 있을 때 제네릭을 사용합니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 일반적인 방식 - 반환 타입이 any
+    function firstElement(arr: any[]) {
+      return arr[0];
+    }
+
+    // 제네릭을 사용한 더 나은 방식
+    function firstElement<Type>(arr: Type[]): Type | undefined {
+      return arr[0];
+    }
+
+    // 사용 예시
+    const s = firstElement(["a", "b", "c"]); // string
+    const n = firstElement([1, 2, 3]);       // number
+    const u = firstElement([]);              // undefined
+    ```
+  </CardContent>
+</Card>
+
+## 타입 추론 (Type Inference)
+
+<Card>
+  <CardHeader>
+    <CardTitle>자동 타입 추론</CardTitle>
+    <CardDescription>
+      TypeScript는 많은 경우 제네릭 타입을 자동으로 추론할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function map<Input, Output>(arr: Input[], func: (arg: Input) => Output): Output[] {
+      return arr.map(func);
+    }
+
+    // 타입이 자동으로 추론됨
+    const parsed = map(["1", "2", "3"], (n) => parseInt(n));
+    // Input은 string, Output은 number로 추론
+    ```
+  </CardContent>
+</Card>
+
+## 제약 조건 (Constraints)
+
+<Alert>
+  <AlertTitle>제약 조건의 필요성</AlertTitle>
+  <AlertDescription>
+    때로는 특정 조건을 만족하는 타입만 허용하고 싶을 때가 있습니다. 
+    이럴 때 `extends` 키워드를 사용하여 제약 조건을 걸 수 있습니다.
+  </AlertDescription>
+</Alert>
+
+<Card>
+  <CardHeader>
+    <CardTitle>제약 조건 예시</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function longest<Type extends { length: number }>(a: Type, b: Type) {
+      if (a.length >= b.length) {
+        return a;
+      } else {
+        return b;
+      }
+    }
+
+    // 올바른 사용
+    const longerArray = longest([1, 2], [1, 2, 3]);
+    const longerString = longest("alice", "bob");
+
+    // 에러! numbers는 length 프로퍼티가 없음
+    const notOK = longest(10, 100); // Error!
+    ```
+  </CardContent>
+</Card>
+
+## 좋은 제네릭 함수 작성 가이드라인
+
+<Tabs defaultValue="rules" className="w-full">
+  <TabsList>
+    <TabsTrigger value="rules">기본 규칙</TabsTrigger>
+    <TabsTrigger value="examples">예시</TabsTrigger>
+  </TabsList>
+  <TabsContent value="rules">
+    1. 타입 매개변수를 아래로 내리기
+    2. 가능한 한 적은 수의 타입 매개변수 사용하기
+    3. 타입 매개변수는 최소 두 번 이상 사용되어야 함
+  </TabsContent>
+  <TabsContent value="examples">
+    ```typescript
+    // 좋은 예시
+    function firstElement1<Type>(arr: Type[]) {
+      return arr[0];
+    }
+
+    // 피해야 할 예시
+    function firstElement2<Type extends any[]>(arr: Type) {
+      return arr[0];
+    }
+
+    // 불필요한 타입 매개변수 사용
+    function greet<Str extends string>(s: Str) {
+      console.log("Hello, " + s);
+    }
+
+    // 더 나은 방식
+    function greet(s: string) {
+      console.log("Hello, " + s);
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 함수 모범 사례</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. **타입 매개변수 최소화**
+      ```typescript
+      // 좋음: 단순하고 명확함
+      function filter1<Type>(arr: Type[], func: (arg: Type) => boolean): Type[] {
+        return arr.filter(func);
+      }
+
+      // 나쁨: 불필요하게 복잡함
+      function filter2<Type, Func extends (arg: Type) => boolean>(
+        arr: Type[],
+        func: Func
+      ): Type[] {
+        return arr.filter(func);
+      }
+      ```
+
+    2. **타입 추론 활용**
+      - 가능한 한 TypeScript의 타입 추론을 활용하여 코드를 간단하게 유지
+      - 명시적인 타입 지정은 필요한 경우에만 사용
+
+    3. **제약 조건의 적절한 사용**
+      - 필요한 경우에만 제약 조건을 사용
+      - 너무 복잡한 제약 조건은 피하기
+  </CardContent>
+</Card>
+
+## 선택적 매개변수 (Optional Parameters)
+
+<Card>
+  <CardHeader>
+    <CardTitle>선택적 매개변수의 기본</CardTitle>
+    <CardDescription>
+      JavaScript 함수는 종종 가변적인 수의 인자를 받습니다. TypeScript에서는 `?`를 사용하여 이를 표현할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 기본적인 선택적 매개변수
+    function f(x?: number) {
+      // x의 타입은 number | undefined
+    }
+
+    // 기본값이 있는 매개변수
+    function g(x = 10) {
+      // x의 타입은 number
+    }
+
+    // 모두 유효한 호출
+    f();        // OK
+    f(10);      // OK
+    g();        // x는 10
+    g(undefined); // x는 10
+    ```
+  </CardContent>
+</Card>
+
+## 콜백의 선택적 매개변수
+
+<Alert variant="warning">
+  <AlertTitle>주의사항</AlertTitle>
+  <AlertDescription>
+    콜백 함수의 선택적 매개변수를 정의할 때 흔히 발생하는 실수를 주의해야 합니다.
+  </AlertDescription>
+</Alert>
+
+<Card>
+  <CardHeader>
+    <CardTitle>잘못된 예시와 올바른 예시</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 잘못된 방식
+    function myForEach(arr: any[], callback: (arg: any, index?: number) => void) {
+      for (let i = 0; i < arr.length; i++) {
+        callback(arr[i], i);
+      }
+    }
+
+    // 올바른 방식
+    function myForEach(arr: any[], callback: (arg: any, index: number) => void) {
+      for (let i = 0; i < arr.length; i++) {
+        callback(arr[i], i);
+      }
+    }
+    ```
+
+    규칙: 콜백 함수 타입을 작성할 때는 실제로 해당 인자 없이 호출할 의도가 있는 경우에만 선택적 매개변수를 사용하세요.
+  </CardContent>
+</Card>
+
+## 함수 오버로드 (Function Overloads)
+
+<Card>
+  <CardHeader>
+    <CardTitle>함수 오버로드의 기본</CardTitle>
+    <CardDescription>
+      TypeScript에서는 여러 다른 방식으로 호출될 수 있는 함수를 오버로드 시그니처를 통해 정의할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function makeDate(timestamp: number): Date;
+    function makeDate(m: number, d: number, y: number): Date;
+    function makeDate(mOrTimestamp: number, d?: number, y?: number): Date {
+      if (d !== undefined && y !== undefined) {
+        return new Date(y, mOrTimestamp, d);
+      } else {
+        return new Date(mOrTimestamp);
+      }
+    }
+
+    const d1 = makeDate(12345678);      // OK
+    const d2 = makeDate(5, 5, 5);       // OK
+    const d3 = makeDate(1, 3);          // 에러!
+    ```
+  </CardContent>
+</Card>
+
+<Tabs defaultValue="rules" className="w-full">
+  <TabsList>
+    <TabsTrigger value="rules">오버로드 규칙</TabsTrigger>
+    <TabsTrigger value="example">예시</TabsTrigger>
+  </TabsList>
+  <TabsContent value="rules">
+    1. 구현 시그니처는 외부에서 직접 호출할 수 없습니다
+    2. 구현 시그니처는 모든 오버로드 시그니처와 호환되어야 합니다
+    3. 최소 두 개 이상의 오버로드 시그니처가 필요합니다
+  </TabsContent>
+  <TabsContent value="example">
+    ```typescript
+    // 좋은 예시
+    function len(x: any[] | string) {
+      return x.length;
+    }
+
+    // 피해야 할 예시
+    function len(s: string): number;
+    function len(arr: any[]): number;
+    function len(x: any) {
+      return x.length;
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+<Alert>
+  <AlertTitle>모범 사례</AlertTitle>
+  <AlertDescription>
+    가능한 경우 오버로드 대신 유니온 타입을 사용한 매개변수를 선호하세요. 
+    이는 코드를 더 단순하게 만들고 구현하기 쉽게 만듭니다.
+  </AlertDescription>
+</Alert>
+
+<Card>
+  <CardHeader>
+    <CardTitle>좋은 오버로드 작성하기</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. **명확성**
+       - 각 오버로드는 명확하고 구분되는 사용 사례를 나타내야 합니다
+    
+    2. **단순성**
+       - 가능한 경우 유니온 타입을 사용하여 단순화하세요
+       ```typescript
+       // 더 나은 방식
+       function createElement(type: string): Element;
+       function createElement(type: string, text: string): Element;
+
+       // 대신 이렇게 사용
+       function createElement(type: string, text?: string): Element;
+       ```
+
+    3. **호환성**
+       - 구현 시그니처는 모든 오버로드 시그니처와 호환되어야 합니다
+       ```typescript
+       function process(x: number): number;
+       function process(x: string): string;
+       // 구현은 모든 케이스를 처리할 수 있어야 함
+       function process(x: number | string) {
+         return typeof x === "number" ? x * 2 : x.toUpperCase();
+       }
+       ```
+  </CardContent>
+</Card>
+
+## 함수에서의 this 선언
+
+<Card>
+  <CardHeader>
+    <CardTitle>this의 타입 지정</CardTitle>
+    <CardDescription>
+      TypeScript는 코드 흐름 분석을 통해 함수 내의 this를 추론할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    const user = {
+      id: 123,
+      admin: false,
+      becomeAdmin: function() {
+        this.admin = true;
+      },
+    };
+    ```
+
+    하지만 때로는 this의 타입을 명시적으로 선언해야 할 필요가 있습니다:
+
+    ```typescript
+    interface DB {
+      filterUsers(filter: (this: User) => boolean): User[];
+    }
+
+    const db = getDB();
+    const admins = db.filterUsers(function(this: User) {
+      return this.admin;
+    });
+    ```
+  </CardContent>
+</Card>
+
+<Alert variant="warning">
+  <AlertTitle>화살표 함수 주의사항</AlertTitle>
+  <AlertDescription>
+    this를 명시적으로 선언할 때는 반드시 일반 function을 사용해야 합니다. 
+    화살표 함수는 자신만의 this 바인딩을 가지지 않습니다.
+  </AlertDescription>
+</Alert>
+
+## 알아야 할 기타 타입들
+
+<Tabs defaultValue="void" className="w-full">
+  <TabsList>
+    <TabsTrigger value="void">void</TabsTrigger>
+    <TabsTrigger value="object">object</TabsTrigger>
+    <TabsTrigger value="unknown">unknown</TabsTrigger>
+    <TabsTrigger value="never">never</TabsTrigger>
+  </TabsList>
+  <TabsContent value="void">
+    ```typescript
+    // 반환값이 void로 추론됨
+    function noop() {
+      return;
+    }
+    ```
+    void는 함수가 값을 반환하지 않을 때 사용됩니다. 
+    undefined와는 다른 타입임에 주의하세요.
+  </TabsContent>
+  <TabsContent value="object">
+    `object` 타입은 원시 타입이 아닌 모든 값을 나타냅니다:
+    - `string`, `number`, `bigint`, `boolean`, `symbol`, `null`, `undefined`를 제외한 모든 것
+    - `{}` 또는 `Object`와는 다름
+    - 함수도 object 타입에 포함됨
+  </TabsContent>
+  <TabsContent value="unknown">
+    ```typescript
+    function f1(a: any) {
+      a.b(); // OK
+    }
+    
+    function f2(a: unknown) {
+      a.b(); // Error: 'a'는 'unknown' 타입
+    }
+    ```
+    unknown은 any보다 안전한 타입입니다. unknown 값에 대해 어떤 연산도 할 수 없습니다.
+  </TabsContent>
+  <TabsContent value="never">
+    ```typescript
+    function fail(msg: string): never {
+      throw new Error(msg);
+    }
+    ```
+    never는 절대 발생하지 않는 값의 타입을 나타냅니다.
+  </TabsContent>
+</Tabs>
+
+<Card>
+  <CardHeader>
+    <CardTitle>Function 타입</CardTitle>
+    <CardDescription>
+      전역 Function 타입의 특징과 사용시 주의사항
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function doSomething(f: Function) {
+      return f(1, 2, 3);  // 반환 타입이 any
+    }
+    ```
+
+    <Alert>
+      <AlertTitle>주의</AlertTitle>
+      <AlertDescription>
+        Function 타입은 any 반환 타입으로 인해 타입 안전성이 떨어집니다. 
+        대신 구체적인 함수 타입이나 `() => void`를 사용하는 것이 좋습니다.
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## 타입 안전성을 위한 모범 사례
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 선택 가이드라인</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. **void vs undefined**
+       ```typescript
+       // void 사용
+       function logMessage(msg: string): void {
+         console.log(msg);
+       }
+
+       // undefined 사용
+       function getValue(): undefined {
+         return undefined;
+       }
+       ```
+
+    2. **unknown vs any**
+       ```typescript
+       // 더 안전한 방식
+       function parseData(data: unknown) {
+         if (typeof data === 'string') {
+           return JSON.parse(data);
+         }
+         return null;
+       }
+
+       // 피해야 할 방식
+       function parseData(data: any) {
+         return JSON.parse(data);
+       }
+       ```
+
+    3. **never의 활용**
+       ```typescript
+       function assertNever(x: never): never {
+         throw new Error("Unexpected value: " + x);
+       }
+
+       function processValue(val: string | number) {
+         if (typeof val === "string") {
+           // 문자열 처리
+         } else if (typeof val === "number") {
+           // 숫자 처리
+         } else {
+           assertNever(val); // 컴파일 시점에 모든 케이스 처리 확인
+         }
+       }
+       ```
+  </CardContent>
+</Card>
+
+## Rest Parameters와 Arguments
+
+<Card>
+  <CardHeader>
+    <CardTitle>Rest Parameters</CardTitle>
+    <CardDescription>
+      함수가 임의의 수의 인자를 받을 수 있게 해주는 문법입니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function multiply(n: number, ...m: number[]) {
+      return m.map((x) => n * x);
+    }
+
+    // a는 [10, 20, 30, 40]을 얻습니다
+    const a = multiply(10, 1, 2, 3, 4);
+    ```
+
+    Rest 매개변수는:
+    - 다른 모든 매개변수 뒤에 나와야 합니다
+    - `...` 문법을 사용합니다
+    - TypeScript에서는 암시적으로 `any[]` 대신 특정 타입의 배열이 됩니다
+  </CardContent>
+</Card>
+
+## Rest Arguments
+
+<Card>
+  <CardHeader>
+    <CardTitle>Spread 문법을 사용한 인자 전달</CardTitle>
+    <CardDescription>
+      배열과 같은 iterable 객체에서 여러 인자를 제공할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    const arr1 = [1, 2, 3];
+    const arr2 = [4, 5, 6];
+    arr1.push(...arr2);
+
+    // 주의: 타입 추론과 불변성
+    // 잘못된 예시
+    const args = [8, 5];
+    const angle = Math.atan2(...args); // 오류!
+
+    // 올바른 예시 - const assertion 사용
+    const args = [8, 5] as const;
+    const angle = Math.atan2(...args); // OK
+    ```
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>불변성 주의사항</AlertTitle>
+  <AlertDescription>
+    TypeScript는 기본적으로 배열이 불변이라고 가정하지 않습니다. 
+    정확한 타입 추론을 위해서는 `as const`를 사용하세요.
+  </AlertDescription>
+</Alert>
+
+## 매개변수 구조 분해 (Parameter Destructuring)
+
+<Card>
+  <CardHeader>
+    <CardTitle>객체 매개변수의 구조 분해</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 기본적인 구조 분해
+    function sum({ a, b, c }: { a: number; b: number; c: number }) {
+      console.log(a + b + c);
+    }
+
+    // 타입 별칭을 사용한 더 깔끔한 방식
+    type ABC = { a: number; b: number; c: number };
+    function sum({ a, b, c }: ABC) {
+      console.log(a + b + c);
+    }
+    ```
+  </CardContent>
+</Card>
+
+## 함수의 할당 가능성 (Assignability)
+
+<Tabs defaultValue="void" className="w-full">
+  <TabsList>
+    <TabsTrigger value="void">void 반환 타입</TabsTrigger>
+    <TabsTrigger value="examples">예시</TabsTrigger>
+  </TabsList>
+  <TabsContent value="void">
+    ```typescript
+    type voidFunc = () => void;
+
+    // 모두 유효한 구현
+    const f1: voidFunc = () => {
+      return true;  // OK!
+    };
+    const f2: voidFunc = () => true;  // OK!
+    const f3: voidFunc = function() {
+      return true;  // OK!
+    };
+    ```
+
+    `void` 반환 타입은 실제 반환값이 있어도 허용됩니다.
+    하지만 반환값은 무시됩니다.
+  </TabsContent>
+  <TabsContent value="examples">
+    ```typescript
+    // 실제 사용 예시
+    const src = [1, 2, 3];
+    const dst = [0];
+
+    // push는 number를 반환하지만 forEach는 void를 기대함
+    // 그래도 정상 동작!
+    src.forEach((el) => dst.push(el));
+    ```
+  </TabsContent>
+</Tabs>
+
+<Alert variant="warning">
+  <AlertTitle>void 반환 타입 주의사항</AlertTitle>
+  <AlertDescription>
+    literal 함수 정의에서 `void` 반환 타입을 명시적으로 사용할 경우,
+    해당 함수는 어떤 값도 반환하면 안 됩니다:
+
+    ```typescript
+    function f2(): void {
+      return true;  // Error!
+    }
+
+    const f3 = function(): void {
+      return true;  // Error!
+    };
+    ```
+  </AlertDescription>
+</Alert>

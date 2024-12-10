@@ -25,5 +25,5 @@ export default async function QuizPage({
     notFound();
   }
 
-  return <CodeQuiz codeQuizzes={quizzes} />;
+  return <CodeQuiz category={category} codeQuizzes={quizzes} />;
 }

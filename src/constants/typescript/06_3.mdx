@@ -1,0 +1,188 @@
+---
+title: "고급 타입 조작"
+description: "TypeScript에서 타입을 조작하는 고급 기법들"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+## 인덱스 접근 타입 (Indexed Access Types)
+
+<Card>
+  <CardHeader>
+    <CardTitle>프로퍼티 타입 조회</CardTitle>
+    <CardDescription>
+      다른 타입의 특정 프로퍼티를 조회할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type Person = { 
+      age: number; 
+      name: string; 
+      alive: boolean 
+    };
+
+    // 단일 프로퍼티 접근
+    type Age = Person["age"];     // number
+
+    // 여러 프로퍼티 접근
+    type I1 = Person["age" | "name"];  // string | number
+    type I2 = Person[keyof Person];    // string | number | boolean
+    ```
+  </CardContent>
+</Card>
+
+## 조건부 타입 (Conditional Types)
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 수준의 조건문</CardTitle>
+    <CardDescription>
+      입력 타입에 따라 다른 타입을 반환하는 조건부 타입을 정의할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    interface Animal {
+      live(): void;
+    }
+    interface Dog extends Animal {
+      woof(): void;
+    }
+
+    type Example1 = Dog extends Animal ? number : string;  // number
+    type Example2 = RegExp extends Animal ? number : string;  // string
+    ```
+
+    <Alert>
+      <AlertTitle>제네릭과의 활용</AlertTitle>
+      <AlertDescription>
+        조건부 타입은 제네릭과 함께 사용할 때 가장 강력합니다:
+        ```typescript
+        type NameOrId<T extends number | string> = 
+          T extends number ? IdLabel : NameLabel;
+        ```
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## 추론과 조건부 타입 (Inferring in Conditional Types)
+
+<Card>
+  <CardHeader>
+    <CardTitle>infer 키워드 사용</CardTitle>
+    <CardDescription>
+      조건부 타입 내에서 타입을 추론하고 사용할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type GetReturnType<Type> = 
+      Type extends (...args: never[]) => infer Return
+        ? Return
+        : never;
+
+    // 사용 예시
+    type Num = GetReturnType<() => number>;  // number
+    type Str = GetReturnType<(x: string) => string>;  // string
+    ```
+  </CardContent>
+</Card>
+
+## 매핑된 타입 (Mapped Types)
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 매핑</TabsTrigger>
+    <TabsTrigger value="modifiers">수정자 사용</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    type OptionsFlags<Type> = {
+      [Property in keyof Type]: boolean;
+    };
+
+    // 사용 예시
+    interface Features {
+      darkMode: () => void;
+      newUserProfile: () => void;
+    }
+
+    type FeatureOptions = OptionsFlags<Features>;
+    // { darkMode: boolean; newUserProfile: boolean; }
+    ```
+  </TabsContent>
+  <TabsContent value="modifiers">
+    ```typescript
+    // readonly 제거
+    type CreateMutable<Type> = {
+      -readonly [Property in keyof Type]: Type[Property];
+    };
+
+    // 선택적 프로퍼티 제거
+    type Concrete<Type> = {
+      [Property in keyof Type]-?: Type[Property];
+    };
+    ```
+  </TabsContent>
+</Tabs>
+
+## 키 재매핑 (Key Remapping)
+
+<Card>
+  <CardHeader>
+    <CardTitle>as 절을 사용한 키 변환</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type Getters<Type> = {
+      [Property in keyof Type as `get${Capitalize<string & Property>}`]: 
+        () => Type[Property]
+    };
+
+    interface Person {
+      name: string;
+      age: number;
+    }
+
+    type LazyPerson = Getters<Person>;
+    // { getName: () => string; getAge: () => number; }
+    ```
+
+    <Alert>
+      <AlertTitle>활용 사례</AlertTitle>
+      <AlertDescription>
+        1. 프로퍼티 필터링
+        2. 프로퍼티 이름 변환
+        3. 새로운 프로퍼티 생성
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+<Card>
+  <CardHeader>
+    <CardTitle>고급 예제</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // PII 필드 추출 예제
+    type ExtractPII<Type> = {
+      [Property in keyof Type]: Type[Property] extends { pii: true } 
+        ? true 
+        : false;
+    };
+
+    type DBFields = {
+      id: { format: "incrementing" };
+      name: { type: string; pii: true };
+    };
+
+    type ObjectsNeedingGDPRDeletion = ExtractPII<DBFields>;
+    // { id: false; name: true; }
+    ```
+  </CardContent>
+</Card>

@@ -1,0 +1,664 @@
+---
+title: "타입 내로잉(Type Narrowing)"
+description: "TypeScript에서 타입을 좁혀나가는 방법과 타입 가드의 사용"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+## 타입 내로잉 이해하기
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 내로잉이란?</CardTitle>
+    <CardDescription>
+      더 구체적인 타입으로 좁혀나가는 TypeScript의 타입 분석 과정
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    다음 예제를 통해 타입 내로잉이 어떻게 동작하는지 살펴보겠습니다:
+
+    ```typescript
+    function padLeft(padding: number | string, input: string): string {
+      throw new Error("Not implemented yet!");
+    }
+    ```
+
+    이 함수에서 `padding`이 숫자일 경우 공백을 그만큼 추가하고, 문자열일 경우 해당 문자열을 `input` 앞에 추가하려고 합니다.
+  </CardContent>
+</Card>
+
+## 잘못된 구현 예시
+
+<Alert>
+  <AlertTitle>주의</AlertTitle>
+  <AlertDescription>
+    타입을 적절히 좁히지 않으면 다음과 같은 타입 에러가 발생할 수 있습니다.
+  </AlertDescription>
+</Alert>
+
+```typescript
+function padLeft(padding: number | string, input: string): string {
+  return " ".repeat(padding) + input; // 에러!
+  // Argument of type 'string | number' is not assignable to parameter of type 'number'.
+}
+```
+
+## 올바른 구현
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 가드 사용하기</CardTitle>
+    <CardDescription>
+      typeof 연산자를 사용한 타입 체크
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function padLeft(padding: number | string, input: string): string {
+      if (typeof padding === "number") {
+        return " ".repeat(padding) + input;
+      }
+      return padding + input;
+    }
+    ```
+
+    TypeScript는 `if` 문 내부에서 `padding`의 타입이 `number`임을 인식하고, 
+    `else` 부분에서는 자동으로 `string` 타입임을 추론합니다.
+  </CardContent>
+</Card>
+
+## typeof 타입 가드
+
+<Tabs defaultValue="supported" className="w-full">
+  <TabsList>
+    <TabsTrigger value="supported">지원되는 타입</TabsTrigger>
+    <TabsTrigger value="example">사용 예시</TabsTrigger>
+  </TabsList>
+  <TabsContent value="supported">
+    TypeScript는 `typeof` 연산자가 반환하는 다음 문자열들을 인식합니다:
+
+    - "string"
+    - "number"
+    - "bigint"
+    - "boolean"
+    - "symbol"
+    - "undefined"
+    - "object"
+    - "function"
+  </TabsContent>
+  <TabsContent value="example">
+    ```typescript
+    function printAll(strs: string | string[] | null) {
+      if (typeof strs === "object") {
+        // 주의! 'strs'는 여전히 'null'일 수 있습니다
+        for (const s of strs) { // 에러
+          console.log(s);
+        }
+      } else if (typeof strs === "string") {
+        console.log(strs);
+      }
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+<Alert>
+  <AlertTitle>JavaScript의 특이점</AlertTitle>
+  <AlertDescription>
+    `typeof null`은 `"object"`를 반환한다는 점에 주의해야 합니다. 
+    이는 JavaScript의 오래된 특성 중 하나로, TypeScript는 이를 고려하여 타입을 좁힐 때 
+    `null` 체크를 별도로 수행해야 할 수 있습니다.
+  </AlertDescription>
+</Alert>
+
+## Truthiness 내로잉
+
+<Card>
+  <CardHeader>
+    <CardTitle>Truthiness란?</CardTitle>
+    <CardDescription>
+      JavaScript에서 조건문에서의 값 평가 방식과 TypeScript의 타입 내로잉
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    JavaScript에서는 모든 표현식을 조건문, `&&`, `||`, `if` 문, Boolean 부정(`!`) 등에서 사용할 수 있습니다.
+    예를 들어, `if` 문의 조건이 반드시 boolean 타입일 필요는 없습니다.
+
+    ```typescript
+    function getUsersOnlineMessage(numUsersOnline: number) {
+      if (numUsersOnline) {
+        return `There are ${numUsersOnline} online now!`;
+      }
+      return "Nobody's here. :(";
+    }
+    ```
+  </CardContent>
+</Card>
+
+<Tabs defaultValue="falsy" className="w-full">
+  <TabsList>
+    <TabsTrigger value="falsy">Falsy 값들</TabsTrigger>
+    <TabsTrigger value="coercion">Boolean 변환</TabsTrigger>
+  </TabsList>
+  <TabsContent value="falsy">
+    JavaScript에서 다음 값들은 `false`로 강제 변환됩니다:
+    - `0`
+    - `NaN`
+    - `""` (빈 문자열)
+    - `0n` (bigint zero)
+    - `null`
+    - `undefined`
+  </TabsContent>
+  <TabsContent value="coercion">
+    ```typescript
+    // 두 방식 모두 'true' 결과
+    Boolean("hello"); // type: boolean, value: true
+    !!"world";       // type: true,    value: true
+    ```
+  </TabsContent>
+</Tabs>
+
+## 실제 사용 예시
+
+<Card>
+  <CardHeader>
+    <CardTitle>Truthiness를 활용한 null 체크</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function printAll(strs: string | string[] | null) {
+      if (strs && typeof strs === "object") {
+        for (const s of strs) {
+          console.log(s);
+        }
+      } else if (typeof strs === "string") {
+        console.log(strs);
+      }
+    }
+    ```
+  </CardContent>
+</Card>
+
+<Alert variant="warning">
+  <AlertTitle>주의사항</AlertTitle>
+  <AlertDescription>
+    원시 타입에 대한 truthiness 체크는 종종 오류를 발생시킬 수 있습니다. 
+    특히 빈 문자열(`""`)을 처리할 때 주의가 필요합니다.
+  </AlertDescription>
+</Alert>
+
+## 동등성 내로잉 (Equality Narrowing)
+
+<Card>
+  <CardHeader>
+    <CardTitle>동등성 검사를 통한 타입 내로잉</CardTitle>
+    <CardDescription>
+      TypeScript는 `===`, `!==`, `==`, `!=` 연산자를 사용한 검사를 통해 타입을 좁힐 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function example(x: string | number, y: string | boolean) {
+      if (x === y) {
+        // x와 y는 모두 string 타입으로 좁혀집니다
+        x.toUpperCase();
+        y.toLowerCase();
+      } else {
+        console.log(x);  // string | number
+        console.log(y);  // string | boolean
+      }
+    }
+    ```
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>JavaScript의 느슨한 동등성 체크</AlertTitle>
+  <AlertDescription>
+    `==` 와 `!=` 연산자를 사용할 때도 타입이 올바르게 좁혀집니다. 
+    특히 `null` 체크 시 `== null`은 `undefined`도 함께 체크한다는 점을 기억하세요.
+  </AlertDescription>
+</Alert>
+
+```typescript
+interface Container {
+  value: number | null | undefined;
+}
+
+function multiplyValue(container: Container, factor: number) {
+  // null과 undefined 모두 제거
+  if (container.value != null) {
+    console.log(container.value); // number 타입
+    container.value *= factor;
+  }
+}
+```
+
+이러한 동등성 검사는 타입을 좁히는 강력한 도구이며, 특히 `null`이나 `undefined` 체크에 유용합니다.
+
+## in 연산자를 통한 내로잉
+
+<Card>
+  <CardHeader>
+    <CardTitle>in 연산자</CardTitle>
+    <CardDescription>
+      객체나 프로토타입 체인에서 특정 프로퍼티의 존재 여부를 확인
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type Fish = { swim: () => void };
+    type Bird = { fly: () => void };
+    
+    function move(animal: Fish | Bird) {
+      if ("swim" in animal) {
+        return animal.swim();
+      }
+      return animal.fly();
+    }
+    ```
+
+    TypeScript는 `in` 연산자를 사용한 체크를 통해 타입을 좁힐 수 있습니다.
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>옵셔널 프로퍼티 주의사항</AlertTitle>
+  <AlertDescription>
+    옵셔널 프로퍼티는 `in` 연산자로 체크할 때 양쪽 브랜치 모두에 존재할 수 있습니다:
+
+    ```typescript
+    type Fish = { swim: () => void };
+    type Bird = { fly: () => void };
+    type Human = { swim?: () => void; fly?: () => void };
+    
+    function move(animal: Fish | Bird | Human) {
+      if ("swim" in animal) {
+        animal; // Fish | Human
+      } else {
+        animal; // Bird | Human
+      }
+    }
+    ```
+  </AlertDescription>
+</Alert>
+
+## instanceof 연산자를 통한 내로잉
+
+<Card>
+  <CardHeader>
+    <CardTitle>instanceof 타입 가드</CardTitle>
+    <CardDescription>
+      값이 특정 생성자의 인스턴스인지 확인하여 타입을 좁히는 방법
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function logValue(x: Date | string) {
+      if (x instanceof Date) {
+        console.log(x.toUTCString());  // x는 Date 타입
+      } else {
+        console.log(x.toUpperCase());  // x는 string 타입
+      }
+    }
+    ```
+  </CardContent>
+</Card>
+
+## 할당을 통한 내로잉
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 할당</TabsTrigger>
+    <TabsTrigger value="error">타입 에러</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    let x = Math.random() < 0.5 ? 10 : "hello world!";
+    // x: string | number
+    x = 1;
+    console.log(x);  // x: number
+    x = "goodbye!";
+    console.log(x);  // x: string
+    ```
+  </TabsContent>
+  <TabsContent value="error">
+    ```typescript
+    let x = Math.random() < 0.5 ? 10 : "hello world!";
+    x = 1;
+    console.log(x);
+    x = true;  // Error: Type 'boolean' is not assignable to type 'string | number'
+    ```
+  </TabsContent>
+</Tabs>
+
+## 제어 흐름 분석 (Control Flow Analysis)
+
+<Card>
+  <CardHeader>
+    <CardTitle>도달 가능성 분석</CardTitle>
+    <CardDescription>
+      TypeScript는 코드의 실행 흐름을 분석하여 타입을 더 정확하게 좁힐 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function padLeft(padding: number | string, input: string) {
+      if (typeof padding === "number") {
+        return " ".repeat(padding) + input;
+      }
+      return padding + input;  // padding은 여기서 string 타입
+    }
+    ```
+
+    TypeScript는 첫 번째 if 블록에서 반환이 발생하면, 그 이후의 코드에서는 
+    `padding`이 `string` 타입이어야만 한다는 것을 알 수 있습니다.
+  </CardContent>
+</Card>
+
+<Card>
+  <CardHeader>
+    <CardTitle>복잡한 제어 흐름</CardTitle>
+    <CardDescription>
+      변수의 타입은 코드의 실행 경로에 따라 여러 번 변할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function example() {
+      let x: string | number | boolean;
+      
+      x = Math.random() < 0.5;
+      console.log(x);  // boolean
+      
+      if (Math.random() < 0.5) {
+        x = "hello";
+        console.log(x);  // string
+      } else {
+        x = 100;
+        console.log(x);  // number
+      }
+      
+      return x;  // string | number
+    }
+    ```
+  </CardContent>
+</Card>
+
+TypeScript의 제어 흐름 분석은 타입 가드와 할당을 만날 때마다 타입을 좁혀나갑니다. 
+변수는 코드의 각 지점에서 서로 다른 타입을 가질 수 있으며, TypeScript는 이를 정확하게 추적합니다.
+
+## 타입 서술어 (Type Predicates)
+
+<Card>
+  <CardHeader>
+    <CardTitle>사용자 정의 타입 가드</CardTitle>
+    <CardDescription>
+      타입의 변화를 더 직접적으로 제어하기 위한 방법
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function isFish(pet: Fish | Bird): pet is Fish {
+      return (pet as Fish).swim !== undefined;
+    }
+
+    // 사용 예시
+    let pet = getSmallPet();
+    
+    if (isFish(pet)) {
+      pet.swim();  // pet은 Fish 타입
+    } else {
+      pet.fly();   // pet은 Bird 타입
+    }
+    ```
+
+    `pet is Fish`는 타입 서술어입니다. 이는 `parameterName is Type` 형태를 가지며, 
+    `parameterName`은 현재 함수 시그니처의 매개변수 이름이어야 합니다.
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>유용한 활용 사례</AlertTitle>
+  <AlertDescription>
+    타입 가드는 배열 필터링에도 유용하게 사용될 수 있습니다:
+
+    ```typescript
+    const zoo: (Fish | Bird)[] = [getSmallPet(), getSmallPet(), getSmallPet()];
+    const underWater1: Fish[] = zoo.filter(isFish);
+    // 또는
+    const underWater2: Fish[] = zoo.filter(isFish) as Fish[];
+    ```
+  </AlertDescription>
+</Alert>
+
+## 구별된 유니온 (Discriminated Unions)
+
+<Card>
+  <CardHeader>
+    <CardTitle>구별된 유니온의 기본</CardTitle>
+    <CardDescription>
+      공통 프로퍼티를 사용하여 여러 타입을 구별하는 방법
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    먼저 잘못된 접근 방식을 살펴보겠습니다:
+
+    ```typescript
+    // 좋지 않은 방식
+    interface Shape {
+      kind: "circle" | "square";
+      radius?: number;
+      sideLength?: number;
+    }
+    ```
+
+    더 나은 방식:
+
+    ```typescript
+    interface Circle {
+      kind: "circle";
+      radius: number;
+    }
+    
+    interface Square {
+      kind: "square";
+      sideLength: number;
+    }
+    
+    type Shape = Circle | Square;
+    ```
+  </CardContent>
+</Card>
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 사용법</TabsTrigger>
+    <TabsTrigger value="switch">switch문 사용</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    function getArea(shape: Shape) {
+      if (shape.kind === "circle") {
+        return Math.PI * shape.radius ** 2;
+      }
+      // shape는 자동으로 Square 타입으로 좁혀짐
+    }
+    ```
+  </TabsContent>
+  <TabsContent value="switch">
+    ```typescript
+    function getArea(shape: Shape) {
+      switch (shape.kind) {
+        case "circle":
+          return Math.PI * shape.radius ** 2;
+        case "square":
+          return shape.sideLength ** 2;
+      }
+    }
+    ```
+  </TabsContent>
+</Tabs>
+
+<Alert>
+  <AlertTitle>구별된 유니온의 장점</AlertTitle>
+  <AlertDescription>
+    구별된 유니온은 다음과 같은 장점을 제공합니다:
+    - 타입 안정성 향상
+    - 코드의 가독성 개선
+    - 컴파일러의 타입 추론 지원
+    - 실수로 인한 버그 방지
+    
+    특히 클라이언트/서버 통신이나 상태 관리 프레임워크에서 메시지를 인코딩할 때 매우 유용합니다.
+  </AlertDescription>
+</Alert>
+
+<Card>
+  <CardHeader>
+    <CardTitle>모범 사례</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. 각 타입에 고유한 식별자(discriminant) 프로퍼티를 포함시킵니다 (예: `kind`)
+    2. 유니온 타입의 각 멤버에 필요한 프로퍼티를 필수로 지정합니다
+    3. switch문이나 if문을 사용하여 타입을 좁힐 때는 식별자 프로퍼티를 활용합니다
+    4. 가능한 한 엄격한 타입 체크를 활성화하여 사용합니다
+
+    ```typescript
+    // 예시: 메시지 시스템
+    interface SendMessage {
+      kind: "send";
+      message: string;
+      to: string;
+    }
+
+    interface ReceiveMessage {
+      kind: "receive";
+      message: string;
+      from: string;
+    }
+
+    type Message = SendMessage | ReceiveMessage;
+    ```
+  </CardContent>
+</Card>
+
+## never 타입
+
+<Card>
+  <CardHeader>
+    <CardTitle>never 타입이란?</CardTitle>
+    <CardDescription>
+      모든 가능성이 제거된 상태를 나타내는 특별한 타입
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    `never` 타입은 타입 내로잉 과정에서 모든 가능성이 제거되어 어떤 값도 가질 수 없는 상태를 나타냅니다.
+    
+    특징:
+    - 모든 타입에 할당할 수 있음
+    - `never` 자신을 제외한 어떤 타입도 `never`에 할당할 수 없음
+  </CardContent>
+</Card>
+
+## 완전성 검사 (Exhaustiveness Checking)
+
+<Card>
+  <CardHeader>
+    <CardTitle>완전성 검사 구현</CardTitle>
+    <CardDescription>
+      never 타입을 활용한 switch 문의 완전성 검사
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type Shape = Circle | Square;
+
+    function getArea(shape: Shape) {
+      switch (shape.kind) {
+        case "circle":
+          return Math.PI * shape.radius ** 2;
+        case "square":
+          return shape.sideLength ** 2;
+        default:
+          const _exhaustiveCheck: never = shape;
+          return _exhaustiveCheck;
+      }
+    }
+    ```
+
+    이 패턴은 모든 가능한 케이스가 처리되었는지 확인하는 데 유용합니다.
+  </CardContent>
+</Card>
+
+<Alert>
+  <AlertTitle>새로운 타입 추가 시 오류 발생</AlertTitle>
+  <AlertDescription>
+    ```typescript
+    interface Triangle {
+      kind: "triangle";
+      sideLength: number;
+    }
+    
+    type Shape = Circle | Square | Triangle;
+    
+    function getArea(shape: Shape) {
+      switch (shape.kind) {
+        case "circle":
+          return Math.PI * shape.radius ** 2;
+        case "square":
+          return shape.sideLength ** 2;
+        default:
+          // 에러: Type 'Triangle' is not assignable to type 'never'
+          const _exhaustiveCheck: never = shape;
+          return _exhaustiveCheck;
+      }
+    }
+    ```
+
+    새로운 타입이 추가되면 TypeScript는 완전성 검사에서 오류를 발생시켜 
+    모든 케이스를 처리하지 않았음을 알려줍니다.
+  </AlertDescription>
+</Alert>
+
+<Card>
+  <CardHeader>
+    <CardTitle>완전성 검사의 이점</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. 타입 안전성 보장
+      - 모든 가능한 케이스가 처리되었는지 컴파일 시점에 확인
+      - 새로운 타입이 추가될 때 관련 로직 업데이트 필요성을 알림
+    
+    2. 유지보수성 향상
+      - 코드 변경 시 누락된 케이스 처리를 쉽게 발견
+      - 리팩토링 시 안전성 제공
+    
+    3. 개발자 경험 개선
+      - IDE를 통한 즉각적인 피드백
+      - 런타임 이전에 잠재적 버그 발견
+
+    ```typescript
+    // 예시: 상태 관리에서의 활용
+    type Action = 
+      | { type: "INCREMENT"; amount: number }
+      | { type: "DECREMENT"; amount: number }
+      | { type: "RESET" };
+
+    function reducer(state: number, action: Action): number {
+      switch (action.type) {
+        case "INCREMENT":
+          return state + action.amount;
+        case "DECREMENT":
+          return state - action.amount;
+        case "RESET":
+          return 0;
+        default:
+          const _exhaustiveCheck: never = action;
+          return _exhaustiveCheck;
+      }
+    }
+    ```
+  </CardContent>
+</Card>

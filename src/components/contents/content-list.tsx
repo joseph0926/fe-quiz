@@ -63,9 +63,14 @@ export const ContentList = ({
             value={`${index}-content`}
             className="w-full border-none"
           >
-            <Link
-              href={`/contents/${category}/${item.id}`}
-              className={`
+            {item.children ? (
+              <AccordionTrigger className="py-2 px-4 hover:bg-accent hover:no-underline rounded-md text-sm transition-all flex items-center justify-start gap-2">
+                학습 내용
+              </AccordionTrigger>
+            ) : (
+              <Link
+                href={`/contents/${category}/${item.id}`}
+                className={`
                 block
                 w-full
                 py-2
@@ -76,9 +81,10 @@ export const ContentList = ({
                 text-sm
                 transition-all
               `}
-            >
-              학습 내용
-            </Link>
+              >
+                학습 내용
+              </Link>
+            )}
             <AccordionContent className="pt-2 space-y-1">
               {item.children?.map((child, childIndex) => (
                 <ContentList

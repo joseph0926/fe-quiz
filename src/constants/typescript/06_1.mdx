@@ -1,0 +1,356 @@
+---
+title: "제네릭"
+description: "TypeScript에서 재사용 가능한 컴포넌트를 만들기 위한 제네릭의 활용"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+## 제네릭의 이해
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭이란?</CardTitle>
+    <CardDescription>
+      제네릭은 다양한 타입에서 작동할 수 있는 재사용 가능한 컴포넌트를 만들 수 있게 해주는 도구입니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 제네릭이 없는 경우
+    function identity(arg: number): number {
+      return arg;
+    }
+
+    // any 타입 사용
+    function identity(arg: any): any {
+      return arg;
+    }
+
+    // 제네릭 사용
+    function identity<Type>(arg: Type): Type {
+      return arg;
+    }
+    ```
+  </CardContent>
+</Card>
+
+## 제네릭 함수 호출하기
+
+<Tabs defaultValue="explicit" className="w-full">
+  <TabsList>
+    <TabsTrigger value="explicit">명시적 타입</TabsTrigger>
+    <TabsTrigger value="inference">타입 추론</TabsTrigger>
+  </TabsList>
+  <TabsContent value="explicit">
+    ```typescript
+    // 명시적 타입 지정
+    let output = identity<string>("myString");
+    ```
+  </TabsContent>
+  <TabsContent value="inference">
+    ```typescript
+    // 타입 추론 사용
+    let output = identity("myString"); // string 타입으로 추론됨
+    ```
+  </TabsContent>
+</Tabs>
+
+## 제네릭 타입 변수 활용
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 타입 제약</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 잘못된 예시
+    function loggingIdentity<Type>(arg: Type): Type {
+      console.log(arg.length);  // 오류! Type에 length가 있다는 보장이 없음
+      return arg;
+    }
+
+    // 올바른 예시
+    function loggingIdentity<Type>(arg: Type[]): Type[] {
+      console.log(arg.length);  // 배열은 length 프로퍼티를 가짐
+      return arg;
+    }
+
+    // 대체 문법
+    function loggingIdentity<Type>(arg: Array<Type>): Array<Type> {
+      console.log(arg.length);
+      return arg;
+    }
+    ```
+  </CardContent>
+</Card>
+
+## 제네릭 타입
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 인터페이스</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 제네릭 함수 타입
+    interface GenericIdentityFn {
+      <Type>(arg: Type): Type;
+    }
+
+    // 전체 인터페이스를 제네릭으로
+    interface GenericIdentityFn<Type> {
+      (arg: Type): Type;
+    }
+
+    let myIdentity: GenericIdentityFn<number> = identity;
+    ```
+  </CardContent>
+</Card>
+
+## 제네릭 클래스
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 클래스 정의</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    class GenericNumber<NumType> {
+      zeroValue: NumType;
+      add: (x: NumType, y: NumType) => NumType;
+    }
+
+    // 숫자 사용
+    let myGenericNumber = new GenericNumber<number>();
+    myGenericNumber.zeroValue = 0;
+    myGenericNumber.add = (x, y) => x + y;
+
+    // 문자열 사용
+    let stringNumeric = new GenericNumber<string>();
+    stringNumeric.zeroValue = "";
+    stringNumeric.add = (x, y) => x + y;
+    ```
+
+    <Alert>
+      <AlertTitle>제네릭 클래스의 제약사항</AlertTitle>
+      <AlertDescription>
+        클래스의 정적 멤버는 클래스의 타입 매개변수를 사용할 수 없습니다.
+        제네릭은 인스턴스 측면에서만 동작합니다.
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## 모범 사례
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 사용 시 고려사항</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. **명확한 네이밍**
+       ```typescript
+       // 좋은 예시
+       interface Container<ItemType> {
+         item: ItemType;
+       }
+
+       // 나쁜 예시
+       interface Container<T> {
+         item: T;
+       }
+       ```
+
+    2. **제약 조건의 적절한 사용**
+       ```typescript
+       interface Lengthwise {
+         length: number;
+       }
+
+       function loggingIdentity<Type extends Lengthwise>(arg: Type): Type {
+         console.log(arg.length);
+         return arg;
+       }
+       ```
+
+    3. **타입 추론 활용**
+       ```typescript
+       // 타입 추론을 활용한 간결한 코드
+       const map = new Map([
+         ["key", "value"]
+       ]); // Map<string, string>으로 자동 추론
+       ```
+  </CardContent>
+</Card>
+
+## 제네릭 제약조건
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 제약조건의 기본</CardTitle>
+    <CardDescription>
+      특정 조건을 만족하는 타입만 허용하도록 제약조건을 설정할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    interface Lengthwise {
+      length: number;
+    }
+
+    function loggingIdentity<Type extends Lengthwise>(arg: Type): Type {
+      console.log(arg.length); // 이제 .length 프로퍼티 사용 가능
+      return arg;
+    }
+
+    // 사용 예시
+    loggingIdentity({ length: 10, value: 3 });  // OK
+    loggingIdentity(3);  // 에러! number에는 length 프로퍼티가 없음
+    ```
+  </CardContent>
+</Card>
+
+## 제약조건에서 타입 매개변수 사용
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 매개변수 간의 제약</CardTitle>
+    <CardDescription>
+      한 타입 매개변수를 다른 타입 매개변수로 제약할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    function getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {
+      return obj[key];
+    }
+
+    let x = { a: 1, b: 2, c: 3, d: 4 };
+
+    getProperty(x, "a");  // OK
+    getProperty(x, "m");  // 에러: "m"은 x의 키가 아님
+    ```
+  </CardContent>
+</Card>
+
+## 제네릭에서 클래스 타입 사용
+
+<Card>
+  <CardHeader>
+    <CardTitle>생성자 함수와 제네릭</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 기본 팩토리 함수
+    function create<Type>(c: { new(): Type }): Type {
+      return new c();
+    }
+
+    // 고급 예제
+    class BeeKeeper {
+      hasMask: boolean = true;
+    }
+
+    class ZooKeeper {
+      nametag: string = "Mikle";
+    }
+
+    class Animal {
+      numLegs: number = 4;
+    }
+
+    class Bee extends Animal {
+      keeper: BeeKeeper = new BeeKeeper();
+    }
+
+    class Lion extends Animal {
+      keeper: ZooKeeper = new ZooKeeper();
+    }
+
+    function createInstance<A extends Animal>(c: new () => A): A {
+      return new c();
+    }
+    ```
+  </CardContent>
+</Card>
+
+## 제네릭 매개변수 기본값
+
+<Card>
+  <CardHeader>
+    <CardTitle>기본 타입 매개변수</CardTitle>
+    <CardDescription>
+      제네릭 타입 매개변수에 기본값을 지정할 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    declare function create<T extends HTMLElement = HTMLDivElement, 
+                          U extends HTMLElement[] = T[]>(
+      element?: T,
+      children?: U
+    ): Container<T, U>;
+
+    const div = create();  // Container<HTMLDivElement, HTMLDivElement[]>
+    const p = create(new HTMLParagraphElement());  
+    // Container<HTMLParagraphElement, HTMLParagraphElement[]>
+    ```
+
+    <Alert>
+      <AlertTitle>기본값 규칙</AlertTitle>
+      <AlertDescription>
+        1. 기본값이 있는 타입 매개변수는 선택적입니다
+        2. 필수 타입 매개변수는 선택적 매개변수 뒤에 올 수 없습니다
+        3. 기본 타입은 제약조건을 만족해야 합니다
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## 모범 사례와 주의사항
+
+<Card>
+  <CardHeader>
+    <CardTitle>제네릭 사용 시 고려사항</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. **명확한 제약조건 사용**
+       ```typescript
+       // 좋은 예시
+       interface HasLength {
+         length: number;
+       }
+       function processLength<T extends HasLength>(arg: T): number {
+         return arg.length;
+       }
+       ```
+
+    2. **타입 매개변수 관계 활용**
+       ```typescript
+       function copyFields<T extends U, U>(target: T, source: U): T {
+         for (let id in source) {
+           target[id] = source[id];
+         }
+         return target;
+       }
+       ```
+
+    3. **기본값 적절히 활용**
+       ```typescript
+       interface DefaultGeneric<T = string> {
+         value: T;
+       }
+       ```
+  </CardContent>
+</Card>
+
+<Alert variant="warning">
+  <AlertTitle>성능 고려사항</AlertTitle>
+  <AlertDescription>
+    제네릭은 강력한 도구이지만, 과도한 사용은 코드의 복잡성과 
+    컴파일 시간에 영향을 줄 수 있습니다. 필요한 경우에만 사용하고, 
+    가능한 한 단순하게 유지하세요.
+  </AlertDescription>
+</Alert>

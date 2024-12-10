@@ -1,0 +1,153 @@
+---
+title: "타입 연산자"
+description: "TypeScript의 keyof와 typeof 타입 연산자 사용하기"
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+## keyof 타입 연산자
+
+<Card>
+  <CardHeader>
+    <CardTitle>keyof 연산자</CardTitle>
+    <CardDescription>
+      객체 타입의 모든 키를 문자열 또는 숫자 리터럴 유니온으로 생성합니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    type Point = { x: number; y: number };
+    type P = keyof Point;  // "x" | "y"
+
+    // 인덱스 시그니처가 있는 경우
+    type Arrayish = { [n: number]: unknown };
+    type A = keyof Arrayish;  // number
+
+    type Mapish = { [k: string]: boolean };
+    type M = keyof Mapish;    // string | number
+    ```
+
+    <Alert>
+      <AlertTitle>JavaScript 객체 키 변환</AlertTitle>
+      <AlertDescription>
+        JavaScript에서 객체 키는 항상 문자열로 강제 변환됩니다.
+        따라서 `obj[0]`은 `obj["0"]`과 동일합니다.
+        이것이 string 인덱스 시그니처를 가진 타입의 keyof가
+        `string | number`가 되는 이유입니다.
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## typeof 타입 연산자
+
+<Tabs defaultValue="basic" className="w-full">
+  <TabsList>
+    <TabsTrigger value="basic">기본 사용법</TabsTrigger>
+    <TabsTrigger value="advanced">고급 사용법</TabsTrigger>
+  </TabsList>
+  <TabsContent value="basic">
+    ```typescript
+    let s = "hello";
+    let n: typeof s;  // string 타입
+
+    // JavaScript의 typeof와 비교
+    console.log(typeof "Hello world");  // "string" 출력
+    ```
+  </TabsContent>
+  <TabsContent value="advanced">
+    ```typescript
+    function f() {
+      return { x: 10, y: 3 };
+    }
+    
+    // 함수의 반환 타입 얻기
+    type P = ReturnType<typeof f>;  // { x: number; y: number; }
+    ```
+  </TabsContent>
+</Tabs>
+
+## ReturnType 활용하기
+
+<Card>
+  <CardHeader>
+    <CardTitle>함수 반환 타입 추출</CardTitle>
+    <CardDescription>
+      `ReturnType` 유틸리티 타입과 `typeof`를 조합하여 함수의 반환 타입을 얻을 수 있습니다.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 함수 타입의 경우
+    type Predicate = (x: unknown) => boolean;
+    type K = ReturnType<Predicate>;  // boolean
+
+    // 실제 함수의 경우
+    function f() {
+      return { x: 10, y: 3 };
+    }
+    type P = ReturnType<typeof f>;  // { x: number; y: number; }
+    ```
+  </CardContent>
+</Card>
+
+## 제한사항과 주의사항
+
+<Card>
+  <CardHeader>
+    <CardTitle>typeof 연산자의 제한사항</CardTitle>
+  </CardHeader>
+  <CardContent>
+    ```typescript
+    // 잘못된 사용 - 식별자나 프로퍼티가 아닌 표현식에 사용
+    // 이는 허용되지 않습니다
+    let shouldContinue: typeof msgbox("Are you sure?");  // 에러!
+    ```
+
+    <Alert variant="warning">
+      <AlertTitle>typeof 사용 제한</AlertTitle>
+      <AlertDescription>
+        1. typeof는 식별자(변수 이름) 또는 해당 프로퍼티에만 사용 가능
+        2. 임의의 표현식에는 사용할 수 없음
+        3. 실행 코드와 타입 코드를 혼동하지 않도록 주의
+      </AlertDescription>
+    </Alert>
+  </CardContent>
+</Card>
+
+## 모범 사례
+
+<Card>
+  <CardHeader>
+    <CardTitle>타입 연산자 활용 팁</CardTitle>
+  </CardHeader>
+  <CardContent>
+    1. **keyof와 제네릭 결합**
+       ```typescript
+       function getProperty<T, K extends keyof T>(obj: T, key: K) {
+         return obj[key];
+       }
+       ```
+
+    2. **typeof를 사용한 타입 추론**
+       ```typescript
+       const config = {
+         endpoint: "https://api.example.com",
+         timeout: 3000
+       };
+
+       type Config = typeof config;
+       ```
+
+    3. **조건부 타입과 함께 사용**
+       ```typescript
+       type TypeName<T> = 
+         T extends string ? "string" :
+         T extends number ? "number" :
+         T extends boolean ? "boolean" :
+         "object";
+       ```
+  </CardContent>
+</Card>

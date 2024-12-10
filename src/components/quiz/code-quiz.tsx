@@ -18,7 +18,13 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
 });
 
-export function CodeQuiz({ codeQuizzes }: { codeQuizzes: CodeQuizType[] }) {
+export function CodeQuiz({
+  codeQuizzes,
+  category,
+}: {
+  codeQuizzes: CodeQuizType[];
+  category: string;
+}) {
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [userCode, setUserCode] = useState(codeQuizzes[0].code);
@@ -45,7 +51,9 @@ export function CodeQuiz({ codeQuizzes }: { codeQuizzes: CodeQuizType[] }) {
   return (
     <div className="min-h-screen w-full sm:max-w-6xl sm:mx-auto sm:p-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">TypeScript 코드 퀴즈</h1>
+        <h1 className="text-3xl font-bold">
+          <span className="capitalize">{category}</span> 코드 퀴즈
+        </h1>
       </div>
 
       <Card className="mb-8">
