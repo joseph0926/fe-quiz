@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -8,14 +8,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ChevronRight, ChevronLeft, Check, X } from "lucide-react";
-import { Quiz } from "@/types/quiz.type";
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ChevronRight, ChevronLeft, Check, X } from 'lucide-react';
+import { Quiz } from '@/types/quiz.type';
 
 type AnswerRecord = Record<string, number>;
 
@@ -76,7 +76,7 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
   function getScore() {
     let correct = 0;
     Object.entries(answers).forEach(([key, value]) => {
-      const [catIndex, qIndex] = key.split("-");
+      const [catIndex, qIndex] = key.split('-');
       if (
         quiz.categories[Number(catIndex)].questions[Number(qIndex)]
           .correctAnswer === value
@@ -100,7 +100,7 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl mb-2">{category.title}</CardTitle>
+              <CardTitle className="mb-2 text-xl">{category.title}</CardTitle>
               <CardDescription>{category.description}</CardDescription>
             </div>
             <span className="text-sm text-muted-foreground">
@@ -123,14 +123,14 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
               {question.options.map((option, index) => (
                 <div
                   key={index}
-                  className={`flex items-center space-x-2 p-3 rounded-lg border ${
+                  className={`flex items-center space-x-2 rounded-lg border p-3 ${
                     showExplanation
                       ? index === question.correctAnswer
-                        ? "border-green-500 bg-green-50 dark:bg-green-950"
+                        ? 'border-green-500 bg-green-50 dark:bg-green-950'
                         : index === selectedAnswer
-                        ? "border-red-500 bg-red-50 dark:bg-red-950"
-                        : "border-transparent"
-                      : "hover:bg-accent"
+                          ? 'border-red-500 bg-red-50 dark:bg-red-950'
+                          : 'border-transparent'
+                      : 'hover:bg-accent'
                   }`}
                 >
                   <RadioGroupItem
@@ -145,12 +145,12 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
                     {option}
                   </Label>
                   {showExplanation && index === question.correctAnswer && (
-                    <Check className="w-4 h-4 text-green-500" />
+                    <Check className="h-4 w-4 text-green-500" />
                   )}
                   {showExplanation &&
                     index === selectedAnswer &&
                     index !== question.correctAnswer && (
-                      <X className="w-4 h-4 text-red-500" />
+                      <X className="h-4 w-4 text-red-500" />
                     )}
                 </div>
               ))}
@@ -170,7 +170,7 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
             onClick={handlePrevious}
             disabled={isFirstQuestion}
           >
-            <ChevronLeft className="w-4 h-4 mr-2" />
+            <ChevronLeft className="mr-2 h-4 w-4" />
             이전
           </Button>
 
@@ -181,7 +181,7 @@ export function QuizComponent({ quiz }: { quiz: Quiz }) {
           ) : (
             <Button onClick={handleNext} disabled={isLastQuestion}>
               다음
-              <ChevronRight className="w-4 h-4 ml-2" />
+              <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           )}
         </CardFooter>

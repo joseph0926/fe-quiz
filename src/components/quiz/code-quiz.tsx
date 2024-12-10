@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Button } from "../ui/button";
+import { useState } from 'react';
+import { Alert, AlertDescription } from '../ui/alert';
+import { Button } from '../ui/button';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "../ui/card";
-import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
-import { CodeQuizType } from "@/types/quiz.type";
+} from '../ui/card';
+import dynamic from 'next/dynamic';
+import { useTheme } from 'next-themes';
+import { CodeQuizType } from '@/types/quiz.type';
 
-const Editor = dynamic(() => import("@monaco-editor/react"), {
+const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
 });
 
@@ -49,8 +49,8 @@ export function CodeQuiz({
   };
 
   return (
-    <div className="min-h-screen w-full sm:max-w-6xl sm:mx-auto sm:p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen w-full sm:mx-auto sm:max-w-6xl sm:p-8">
+      <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">
           <span className="capitalize">{category}</span> 코드 퀴즈
         </h1>
@@ -62,31 +62,31 @@ export function CodeQuiz({
           <CardDescription>{currentQuiz.description}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] mb-4">
+          <div className="mb-4 h-[400px]">
             <Editor
               height="100%"
               defaultLanguage="typescript"
-              theme={theme === "dark" ? "vs-dark" : "light"}
+              theme={theme === 'dark' ? 'vs-dark' : 'light'}
               value={userCode}
-              onChange={(value) => setUserCode(value || "")}
+              onChange={(value) => setUserCode(value || '')}
               options={{
                 minimap: { enabled: false },
                 fontSize: 14,
-                lineNumbers: "on",
+                lineNumbers: 'on',
                 readOnly: false,
-                wordWrap: "on",
+                wordWrap: 'on',
               }}
             />
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <Button onClick={handlePrevQuiz} disabled={currentQuizIndex === 0}>
           이전 문제
         </Button>
         <Button onClick={() => setShowAnswer(!showAnswer)}>
-          {showAnswer ? "해답 숨기기" : "해답 보기"}
+          {showAnswer ? '해답 숨기기' : '해답 보기'}
         </Button>
         <Button
           onClick={handleNextQuiz}

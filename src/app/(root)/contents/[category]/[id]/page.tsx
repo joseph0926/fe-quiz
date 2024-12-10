@@ -1,9 +1,9 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-import Link from "next/link";
-import { Suspense } from "react";
-import { MdxRemoteWrapper } from "@/components/contents/mdx-remote-wrapper";
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { MdxRemoteWrapper } from '@/components/contents/mdx-remote-wrapper';
 
 export default async function PostPage({
   params,
@@ -14,17 +14,17 @@ export default async function PostPage({
 
   const filePath = path.join(
     process.cwd(),
-    "src",
-    "constants",
+    'src',
+    'constants',
     category,
     `${id}.mdx`
   );
-  const fileContents = fs.readFileSync(filePath, "utf8");
+  const fileContents = fs.readFileSync(filePath, 'utf8');
   const { content, data } = matter(fileContents);
 
   return (
     <div className="prose mx-auto p-4">
-      <div className="flex items-center w-full justify-between py-4">
+      <div className="flex w-full items-center justify-between py-4">
         <Link href={`/contents/${category}`} className="block">
           뒤로가기
         </Link>

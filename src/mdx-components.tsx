@@ -1,9 +1,9 @@
-import type { MDXComponents } from "mdx/types";
-import Image from "next/image";
-import Link from "next/link";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import type { MDXComponents } from 'mdx/types';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -65,7 +65,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     a: ({ children, href, ...props }) => (
       <Link
-        href={href ?? "#"}
+        href={href ?? '#'}
         className="text-blue-400 underline decoration-2 underline-offset-2 transition-colors hover:text-blue-300"
         {...props}
       >
@@ -127,8 +127,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     img: ({ alt, src, width, height, ...props }) => (
       <Image
-        src={src || ""}
-        alt={alt || ""}
+        src={src || ''}
+        alt={alt || ''}
         width={Number(width)}
         height={Number(height)}
         className="my-6 w-full rounded-lg"

@@ -1,4 +1,4 @@
-import createMDX from "@next/mdx";
+import createMDX from '@next/mdx';
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
@@ -7,7 +7,7 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   experimental: {
     mdxRs: true,
   },

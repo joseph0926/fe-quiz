@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
-import { CodeQuiz } from "@/components/quiz/code-quiz";
-import { quizMap } from "@/constants/quizMap";
+import { notFound } from 'next/navigation';
+import { CodeQuiz } from '@/components/quiz/code-quiz';
+import { quizMap } from '@/constants/quizMap';
 
 export default async function QuizPage({
   params,

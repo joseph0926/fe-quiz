@@ -1,6 +1,6 @@
-import { Quiz } from "@/types/quiz.type";
-import { ListItem } from "@/types/content.type";
-import { chapterQuizzes } from "@/constants/chapter-quiz";
+import { Quiz } from '@/types/quiz.type';
+import { ListItem } from '@/types/content.type';
+import { chapterQuizzes } from '@/constants/chapter-quiz';
 
 export function calculateQuizScore(
   userAnswers: number[],

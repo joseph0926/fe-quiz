@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx}\""
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -41,7 +42,13 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.4",
     "postcss": "^8",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "engines": {
+    "node": ">=21"
+  },
+  "packageManager": "pnpm@9.15.0"
 }
