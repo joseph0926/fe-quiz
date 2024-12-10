@@ -1,6 +1,6 @@
-export type TOCItem = {
+export type ListItem = {
   id: string;
   title: string;
-  children?: TOCItem[];
+  children?: ListItem[];
   isQuiz?: boolean;
 };

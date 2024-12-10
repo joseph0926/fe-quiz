@@ -1,12 +1,6 @@
 import { notFound } from "next/navigation";
 import { CodeQuiz } from "@/components/quiz/code-quiz";
-import { codeQuizzes as tsQuiz2 } from "@/constants/typescript/code-quiz/02";
-
-const quizMap = {
-  typescript: {
-    "02": tsQuiz2,
-  },
-} as const;
+import { quizMap } from "@/constants/quizMap";
 
 export default async function QuizPage({
   params,

@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
-import { TOCItem } from "@/types/content.type";
+import { ListItem } from "@/types/content.type";
 import { Brain } from "lucide-react";
 import { hasQuiz, getQuizForChapter } from "@/lib/quiz";
 import { QuizComponent } from "../quiz/quiz";
@@ -17,13 +17,13 @@ export const ContentList = ({
   index,
   category,
 }: {
-  item: TOCItem;
+  item: ListItem;
   index: string;
   category: string;
 }) => {
   const depth = index.split("-").length - 1;
-  const quiz = getQuizForChapter(item.id);
-  const showQuiz = hasQuiz(item);
+  const quiz = getQuizForChapter(category, item.id);
+  const showQuiz = hasQuiz(category, item);
 
   return (
     <AccordionItem

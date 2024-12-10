@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { tocData } from "@/constants/contents/typescript";
+import { listData } from "@/constants/contents/list";
 import { Accordion } from "@/components/ui/accordion";
 import { ContentList } from "@/components/contents/content-list";
 import { BookOpen } from "lucide-react";
@@ -28,14 +28,15 @@ export default async function ContentsPage({
         </CardHeader>
         <CardContent>
           <Accordion type="multiple" className="w-full transition-all">
-            {tocData.children?.map((item, index) => (
-              <ContentList
-                key={index}
-                category={category}
-                item={item}
-                index={index.toString()}
-              />
-            ))}
+            {listData.title === category &&
+              listData.children?.map((item, index) => (
+                <ContentList
+                  key={index}
+                  category={category}
+                  item={item}
+                  index={index.toString()}
+                />
+              ))}
           </Accordion>
         </CardContent>
       </Card>

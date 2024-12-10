@@ -1,8 +1,8 @@
-import { TOCItem } from "@/types/content.type";
+import { ListItem } from "@/types/content.type";
 
-export const tocData: TOCItem = {
+export const listData: ListItem = {
   id: "00",
-  title: "Handbook",
+  title: "typescript",
   children: [
     { id: "01", title: "The Basics" },
     { id: "02", title: "Everyday Types" },
