@@ -1,7 +1,16 @@
 import { Quiz } from "@/types/quiz.type";
 import { TOCItem } from "@/types/content.type";
-import { typeScriptQuizOne } from "@/constants/typescript/quiz/01";
-import { typeScriptQuizTwo } from "@/constants/typescript/quiz/02";
+import {
+  typeScriptQuizOne,
+  typeScriptQuizTwo,
+  typeNarrowingQuiz,
+  functionTypesQuiz,
+  objectTypesQuiz,
+  genericsQuiz,
+  typeOperatorsQuiz,
+  advancedTypesQuiz,
+  templateLiteralQuiz,
+} from "@/constants/typescript/quiz";
 
 export function calculateQuizScore(
   userAnswers: number[],
@@ -34,6 +43,13 @@ export function calculateQuizScore(
 export const chapterQuizzes: Record<string, Quiz> = {
   "01": typeScriptQuizOne,
   "02": typeScriptQuizTwo,
+  "03": typeNarrowingQuiz,
+  "04": functionTypesQuiz,
+  "05": objectTypesQuiz,
+  "06_1": genericsQuiz,
+  "06_2": typeOperatorsQuiz,
+  "06_3": advancedTypesQuiz,
+  "06_4": templateLiteralQuiz,
 };
 
 export function getQuizForChapter(chapterId: string): Quiz {
