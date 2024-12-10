@@ -18,6 +18,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: 'FE Quiz',
   description: '개인 FE 학습을 위한 퀴즈 웹 애플리케이션입니다.',
+  icons: {
+    icon: '/logo.svg',
+  },
 };
 
 export default function RootLayout({
